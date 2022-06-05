@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import { KeyboardAvoidingView, StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, ScrollView } from 'react-native';
 import TransactionScreen from './screens/TransactionScreen';
-
+import BillScreen from './screens/BillScreen';
 
 const App = () => {
 
   return (
-    <TransactionScreen />
+    <BillScreen />
   );
       {/* <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
