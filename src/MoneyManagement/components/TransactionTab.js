@@ -7,7 +7,15 @@ const TransTab = (props) => {
     <View style={styles.item}>
       <View style={styles.itemLeft}>
         <View style={styles.square}></View>
-        <Text style={styles.itemText}>{props.data.name}, {props.data.id}</Text>
+        <View style={styles.data}>
+        <Text style={styles.itemText}>{props.data.catergory}</Text>
+        <Text style={styles.itemText}>{props.data.note}</Text>
+        <Text style={styles.itemText}>{props.data.date}</Text>
+
+        </View>
+      </View>
+      <View style={styles.itemRight}>
+      <Text style={styles.itemTextRight}>{props.data.amount}</Text>
       </View>
     </View>
   )
@@ -16,6 +24,10 @@ const TransTab = (props) => {
 export default TransTab;
 
 const styles = StyleSheet.create({
+  data:{
+    alignContent:'center',
+    flex: 1
+  },
   item: {
     backgroundColor: '#FFF',
     padding: 15,
@@ -28,7 +40,11 @@ const styles = StyleSheet.create({
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+    maxWidth: '80%'
+  },
+  itemRight: {
+    alignItems: 'center',
   },
   square: {
     width: 24,
