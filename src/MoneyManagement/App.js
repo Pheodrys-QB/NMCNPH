@@ -10,7 +10,7 @@ const App = () => {
     //<TransactionScreen />
     <AddScreen />
   );
-      {/* <KeyboardAvoidingView 
+      { <KeyboardAvoidingView 
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.writeTaskWrapper}
       >
@@ -22,9 +22,9 @@ const App = () => {
         </TouchableOpacity>
       </KeyboardAvoidingView>
 
-    </View> */}
+     }
 
- // );
+  //);
 };
 
 export default App;
