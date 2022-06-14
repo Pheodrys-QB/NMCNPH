@@ -5,7 +5,6 @@ import {
   View,
   TextInput,
   TouchableHighlight,
-  TouchableOpacity,
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
 
@@ -66,6 +65,8 @@ const test = [
 const AddScreen = () => {
   const [selectedCat, setSelectedCat] = useState(null);
   const [selectedWal, setSelectedWal] = useState(null);
+  const [money, setMoney] = useState(null)
+  const [note, setNote] = useState(null)
 
   const onSelectCatergory = item => {
     setSelectedCat(item);
@@ -89,6 +90,8 @@ const AddScreen = () => {
             <Text style={{paddingTop: 10}}>Amount: </Text>
             <TextInput
               placeholder="Input money"
+              onChangeText={setMoney}
+              value={money}
               style={styles.moneyInput}
               keyboardType="decimal-pad"
             />
@@ -97,6 +100,8 @@ const AddScreen = () => {
             <Text style={{paddingTop: 10}}>Note: </Text>
             <TextInput
               placeholder="Optional note"
+              onChangeText={setNote}
+              value={note}
               style={styles.noteInput}
               multiline={true}
             />
