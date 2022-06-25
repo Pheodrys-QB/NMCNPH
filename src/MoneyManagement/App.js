@@ -2,11 +2,14 @@ import React from 'react';
 
 import TransactionScreen from './screens/TransactionScreen';
 import AddScreen from './screens/AddScreen';
+import SavingScreen from './screens/SavingScreen'
 
 const App = () => {
   return (
     //<TransactionScreen />
-    <AddScreen />
+    //<AddScreen />
+    <SavingScreen/>
+
   );
 
   // {
