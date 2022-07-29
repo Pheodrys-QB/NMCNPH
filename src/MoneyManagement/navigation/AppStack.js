@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import { Text, View, Button } from 'react-native';
 import { auth } from '../firebase-config';
 import { signOut } from "firebase/auth"
+import AddScreen from "../screens/AddScreen"
+import TransactionScreen from '../screens/TransactionScreen';
 
 
 const AppStack = () => {
@@ -10,10 +12,7 @@ const AppStack = () => {
   }
 
   return (
-    <View>
-      <Text> AppStack </Text>
-      <Button title='Logout' onPress={LogOut}/>
-    </View>
+      <TransactionScreen />
   );
     
 };

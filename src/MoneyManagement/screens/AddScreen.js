@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   StyleSheet,
   Text,
   View,
   TextInput,
   TouchableHighlight,
+  ScrollView,
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
+import {db} from '../firebase-config';
+import {doc, collection, setDoc} from 'firebase/firestore';
+import {AuthContext} from '../navigation/AuthProvider';
 
 const test = [
   {
@@ -21,52 +25,14 @@ const test = [
   {
     catergory: 'housing',
   },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
-  {
-    catergory: 'food',
-  },
 ];
 
 const AddScreen = () => {
+  const user = useContext(AuthContext);
   const [selectedCat, setSelectedCat] = useState(null);
   const [selectedWal, setSelectedWal] = useState(null);
-  const [money, setMoney] = useState(null)
-  const [note, setNote] = useState(null)
+  const [money, setMoney] = useState(null);
+  const [note, setNote] = useState(null);
 
   const onSelectCatergory = item => {
     setSelectedCat(item);
@@ -75,8 +41,29 @@ const AddScreen = () => {
     setSelectedWal(item);
   };
 
-  const dummy = () => {
-    console.log('button');
+  const setData = async () => {
+    const colRef = collection(db, 'users', user.uid, 'Transactions');
+    const docRef = doc(colRef);
+    data = {
+      id: docRef.id,
+      catergory: selectedCat,
+      wallet: selectedWal,
+      amount: money,
+      note: note,
+    };
+
+    try {
+      await setDoc(docRef, {
+        id: docRef.id,
+        catergory: selectedCat,
+        wallet: selectedWal,
+        amount: money,
+        note: note,
+      });
+      console.log('done');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -84,43 +71,46 @@ const AddScreen = () => {
       <View style={styles.titleTop}>
         <Text style={styles.sectionTitle}>Add transaction</Text>
       </View>
-      <View style={styles.Wrapper}>
-        <View style={{paddingTop: 50}}>
-          <View style={styles.inputWrapper}>
-            <Text style={{paddingTop: 10}}>Amount: </Text>
-            <TextInput
-              placeholder="Input money"
-              onChangeText={setMoney}
-              value={money}
-              style={styles.moneyInput}
-              keyboardType="decimal-pad"
-            />
+      <ScrollView>
+        <View style={styles.Wrapper}>
+          <View style={{paddingTop: 50}}>
+            <View style={styles.inputWrapper}>
+              <Text style={{paddingTop: 10}}>Amount: </Text>
+              <TextInput
+                placeholder="Input money"
+                onChangeText={setMoney}
+                value={money}
+                style={styles.moneyInput}
+                keyboardType="decimal-pad"
+              />
+            </View>
+            <View style={styles.inputWrapper} height={60}>
+              <Text style={{paddingTop: 10}}>Note: </Text>
+              <TextInput
+                placeholder="Optional note"
+                onChangeText={setNote}
+                value={note}
+                style={styles.noteInput}
+                multiline={true}
+              />
+            </View>
+            <View style={styles.inputWrapper}>
+              <Text>Date: </Text>
+              <Text>DATETIMEPICKER</Text>
+            </View>
           </View>
-          <View style={styles.inputWrapper} height={60}>
-            <Text style={{paddingTop: 10}}>Note: </Text>
-            <TextInput
-              placeholder="Optional note"
-              onChangeText={setNote}
-              value={note}
-              style={styles.noteInput}
-              multiline={true}
-            />
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text>Date: </Text>
-            <Text>DATETIMEPICKER</Text>
-          </View>
-        </View>
 
-        <TouchableHighlight
-          onPress={() => dummy()}
-          style={styles.buttonView}
-          underlayColor="#fff">
-          <View style={styles.button}>
-            <Text>Add</Text>
-          </View>
-        </TouchableHighlight>
-      </View>
+          {/* onPress={() => dummy()} */}
+          <TouchableHighlight
+            onPress={() => setData()}
+            style={styles.buttonView}
+            underlayColor="#fff">
+            <View style={styles.button}>
+              <Text>Add</Text>
+            </View>
+          </TouchableHighlight>
+        </View>
+      </ScrollView>
       <View style={styles.dropdownBar}>
         <View style={{flexDirection: 'row'}}>
           <Text>Catergory: </Text>
@@ -197,5 +187,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     flex: 1,
     height: 40,
+  },
+  scrollViewStyle: {
+    marginHorizontal: 0,
+    marginVertical: 0,
   },
 });

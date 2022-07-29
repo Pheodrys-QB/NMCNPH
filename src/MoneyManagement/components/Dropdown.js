@@ -28,8 +28,8 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
           <ScrollView>
             {data.map((val, index) => {
               return (
-                <TouchableOpacity onPress={()=>onPressAction(val.catergory)}>
-                  <Text key={index}>{val.catergory}</Text>
+                <TouchableOpacity key={index} onPress={()=>onPressAction(val.catergory)}>
+                  <Text>{val.catergory}</Text>
                 </TouchableOpacity>
               );
             })}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -8,94 +8,29 @@ import {
 } from 'react-native';
 import TransTab from '../components/TransactionTab';
 
-const test = [
-  {
-    name: 'bb',
-    id: '45',
-  },
-  {
-    name: 'ab',
-    id: '12',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'bb',
-    id: '45',
-  },
-  {
-    name: 'ab',
-    id: '12',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'bb',
-    id: '45',
-  },
-  {
-    name: 'ab',
-    id: '12',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'bb',
-    id: '45',
-  },
-  {
-    name: 'ab',
-    id: '12',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-  {
-    name: 'bb',
-    id: '45',
-  },
-  {
-    name: 'ab',
-    id: '12',
-  },
-  {
-    name: 'cc',
-    id: '78',
-  },
-];
+import { db } from "../firebase-config"
+import { getDocs, collection } from "firebase/firestore"
+import { AuthContext } from "../navigation/AuthProvider";
+
 
 const TransactionScreen = () => {
+  const [transactionList, setTransactionList] = useState([])
+  const user = useContext(AuthContext);
+
+  const getData = async ()=>{
+    const transCol = collection(db, 'users', user.uid, 'Transactions');
+    const transSnapshot = await getDocs(transCol);
+    const transList = transSnapshot.docs.map(doc => doc.data());
+    setTransactionList(transList)
+  }
+
+    
+  useEffect(() => {
+    getData()
+  }, []);
+
+  
+  
   return (
     <View style={styles.container}>
       <View style={styles.titleTop}>
@@ -108,7 +43,7 @@ const TransactionScreen = () => {
           
           <View style={styles.items}>
             {
-              test.map((item, index) => {
+              transactionList.map((item, index) => {
                 return (
                   <TouchableOpacity
                     key={index}

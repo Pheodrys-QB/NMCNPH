@@ -7,7 +7,7 @@ const TransTab = (props) => {
     <View style={styles.item}>
       <View style={styles.itemLeft}>
         <View style={styles.square}></View>
-        <Text style={styles.itemText}>{props.data.name}, {props.data.id}</Text>
+        <Text style={styles.itemText}>{props.data.catergory}, {props.data.id}</Text>
       </View>
     </View>
   )
