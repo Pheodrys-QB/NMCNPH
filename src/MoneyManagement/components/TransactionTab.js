@@ -1,17 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {Swipeable, GestureHandlerRootView} from 'react-native-gesture-handler';
 
-const TransTab = (props) => {
-
+const TransTab = ({data, index, onDelete = () => {}}) => {
+  const rightSwipe = () => {
+    return (
+      <TouchableOpacity activeOpacity={0.5} onPress={()=>onDelete(index)}>
+        <View style={styles.deleteBox}>
+          <Text>Delete</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
   return (
-    <View style={styles.item}>
-      <View style={styles.itemLeft}>
-        <View style={styles.square}></View>
-        <Text style={styles.itemText}>{props.data.catergory}, {props.data.id}</Text>
-      </View>
-    </View>
-  )
-}
+    <GestureHandlerRootView>
+      <Swipeable renderRightActions={rightSwipe} overshootRight={false}>
+        <View style={styles.item}>
+          <View style={styles.itemLeft}>
+            <View style={styles.square}></View>
+            <Text style={styles.itemText}>
+              {data.catergory}, {data.id}
+            </Text>
+          </View>
+          <View style={styles.itemRight}>
+            <Text>{data.amount}</Text>
+          </View>
+        </View>
+      </Swipeable>
+    </GestureHandlerRootView>
+  );
+};
 
 export default TransTab;
 
@@ -24,11 +42,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 5,
+    height: 90,
   },
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+  },
+  itemRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
   },
   square: {
     width: 24,
@@ -38,9 +62,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 15,
   },
-  itemText: {
-    maxWidth: '80%',
+  itemText: {},
+  deleteBox: {
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: 90,
   },
 });
-
-
