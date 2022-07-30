@@ -1,18 +1,28 @@
-import React, {useState} from 'react';
-import { Text, View, Button } from 'react-native';
-import { auth } from '../firebase-config';
-import { signOut } from "firebase/auth"
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import AddScreen from "../screens/AddScreen"
 import TransactionScreen from '../screens/TransactionScreen';
+import MoreScreen from '../screens/MoreScreen';
+import BudgetScreen from '../screens/BudgetScreen';
+import BillScreen from '../screens/BillScreen';
 
 
+const Tab = createBottomTabNavigator(); 
 const AppStack = () => {
-  const LogOut = async () =>{
-    await signOut(auth);
-  }
+
 
   return (
-      <TransactionScreen />
+    <NavigationContainer>
+    <Tab.Navigator initialRouteName='Transactions' screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Budget" component={BudgetScreen} />
+      <Tab.Screen name="Transactions" component={TransactionScreen} />
+      <Tab.Screen name="Add" component={AddScreen} />
+      <Tab.Screen name="Bill" component={BillScreen} />
+      <Tab.Screen name="More" component={MoreScreen} />
+    </Tab.Navigator>
+  </NavigationContainer>
   );
     
 };

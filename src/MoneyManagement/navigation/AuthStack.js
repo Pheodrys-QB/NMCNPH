@@ -1,46 +1,23 @@
-import React, {useState} from 'react';
-import {View, TextInput, Button} from 'react-native';
-import {auth} from '../firebase-config';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
+import React from 'react';
+import RegisterScreen from '../screens/RegisterScreen';
+import SignInScreen from '../screens/SignInScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
 
 const AuthStack = () => {
-  const [email, setEmail] = useState('FirstUser@gmail.com');
-  const [password, setPassword] = useState('FirstUser');
-
-  const Register = async () => {
-    try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const SignIn = async () => {
-    try {
-        const user = await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        console.log(err);
-      }  };
-
   return (
-    <View>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={text => setEmail(text)}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        secureTextEntry={true}
-        onChangeText={text => setPassword(text)}
-      />
-      <Button title="Register" onPress={Register} />
-      <Button title="Sign in" onPress={SignIn} />
-    </View>
+    <NavigationContainer >
+      <Stack.Navigator  options={{
+          headerBackTitleVisible: false,
+        }}>
+        <Stack.Screen name="SignIn" component={SignInScreen} options={{headerTitle:'', headerStyle:{backgroundColor:'#CB2635',
+          elevation: 0,borderBottomWidth: 0}}}/>
+        <Stack.Screen name="Register" component={RegisterScreen} options={{headerTitle:'',headerTintColor: 'white', headerStyle:{backgroundColor:'#CB2635',
+          elevation: 0,borderBottomWidth: 0}}}/>
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

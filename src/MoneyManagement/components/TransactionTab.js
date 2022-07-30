@@ -57,12 +57,12 @@ const styles = StyleSheet.create({
   square: {
     width: 24,
     height: 24,
-    backgroundColor: '#55BCF6',
+    backgroundColor: '#CB2635',
     opacity: 0.4,
     borderRadius: 5,
     marginRight: 15,
   },
-  itemText: {},
+  itemText: {fontSize: 18},
   deleteBox: {
     backgroundColor: 'red',
     justifyContent: 'center',

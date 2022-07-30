@@ -44,13 +44,6 @@ const AddScreen = () => {
   const setData = async () => {
     const colRef = collection(db, 'users', user.uid, 'Transactions');
     const docRef = doc(colRef);
-    data = {
-      id: docRef.id,
-      catergory: selectedCat,
-      wallet: selectedWal,
-      amount: money,
-      note: note,
-    };
 
     try {
       await setDoc(docRef, {
@@ -102,7 +95,7 @@ const AddScreen = () => {
 
           {/* onPress={() => dummy()} */}
           <TouchableHighlight
-            onPress={() => setData()}
+            onPress={setData}
             style={styles.buttonView}
             underlayColor="#fff">
             <View style={styles.button}>
@@ -153,14 +146,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   titleTop: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: '#ff7f50',
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: '#CB2635',
     justifyContent: 'center',
     alignItems: 'center',
   },
   Wrapper: {
-    paddingTop: 30,
+    paddingTop: 20,
   },
   dropdownBar: {
     position: 'absolute',

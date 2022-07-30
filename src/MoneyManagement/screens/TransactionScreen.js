@@ -56,22 +56,36 @@ const TransactionScreen = () => {
   const user = useContext(AuthContext);
 
   const getData = async () => {
-    setTransactionList([]);
-    const transCol = collection(db, 'users', user.uid, 'Transactions');
-    const transSnapshot = await getDocs(transCol);
-    const transList = transSnapshot.docs.map(doc => doc.data());
-    setTransactionList(transList);
+    if (user) {
+      try {
+        const transSnapshot = await getDocs(
+          collection(db, 'users', user.uid, 'Transactions'),
+        );
+        const transList = transSnapshot.docs.map(doc => doc.data());
+        setTransactionList(transList);
+      } catch (err) {
+        console.log(err);
+      }
+    }
   };
 
   useEffect(() => {
     getData();
-  }, []);
+  }, [user]);
+  useEffect(() => {
+    getData();
+  });
 
-  const onDelete = async (index) => {
+
+  const onDelete = async index => {
     // Delete from database
-    await deleteDoc(doc(db, 'users', user.uid, 'Transactions', transactionList[index].id))
-    setTransactionList(current => current.filter((transactionList, i) => i !== index));
-    console.log('delete'+ index.toString());
+    await deleteDoc(
+      doc(db, 'users', user.uid, 'Transactions', transactionList[index].id),
+    );
+    setTransactionList(current =>
+      current.filter((transactionList, i) => i !== index),
+    );
+    console.log('delete' + index.toString());
   };
 
   return (
@@ -111,7 +125,7 @@ const styles = StyleSheet.create({
   titleTop: {
     paddingTop: 20,
     paddingBottom: 20,
-    backgroundColor: '#ff7f50',
+    backgroundColor: '#CB2635',
     justifyContent: 'center',
     alignItems: 'center',
   },
