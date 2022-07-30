@@ -1,17 +1,11 @@
 import React, {useState, useContext, useEffect} from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-  ScrollView,
-  FlatList,
-} from 'react-native';
+import {StyleSheet, Text, View, FlatList} from 'react-native';
 import TransTab from '../components/TransactionTab';
 
 import {db} from '../firebase-config';
 import {getDocs, collection, deleteDoc, doc} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
+import {useFocusEffect} from '@react-navigation/native';
 
 const TransactionScreen = () => {
   const test = [
@@ -69,13 +63,19 @@ const TransactionScreen = () => {
     }
   };
 
-  useEffect(() => {
-    getData();
-  }, [user]);
-  useEffect(() => {
-    getData();
-  });
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        getData();
+      }
+    }, []),
+  );
 
+  useEffect(()=>{
+    if (user) {
+      getData();
+    }
+  }, [user])
 
   const onDelete = async index => {
     // Delete from database

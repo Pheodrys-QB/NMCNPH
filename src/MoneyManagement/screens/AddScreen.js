@@ -12,6 +12,7 @@ import {db} from '../firebase-config';
 import {doc, collection, setDoc} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 
+
 const test = [
   {
     catergory: 'food',
@@ -41,6 +42,7 @@ const AddScreen = () => {
     setSelectedWal(item);
   };
 
+
   const setData = async () => {
     const colRef = collection(db, 'users', user.uid, 'Transactions');
     const docRef = doc(colRef);
@@ -57,6 +59,10 @@ const AddScreen = () => {
     } catch (err) {
       console.log(err);
     }
+    setSelectedCat(null);
+      setSelectedWal(null);
+      setMoney(null);
+      setNote(null);
   };
 
   return (
