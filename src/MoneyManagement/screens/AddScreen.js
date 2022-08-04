@@ -56,6 +56,7 @@ const AddScreen = () => {
         note: note,
       });
       console.log('done');
+      console.log(user.uid)
     } catch (err) {
       console.log(err);
     }

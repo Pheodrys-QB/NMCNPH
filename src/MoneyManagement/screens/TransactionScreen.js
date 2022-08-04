@@ -8,44 +8,6 @@ import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 
 const TransactionScreen = () => {
-  const test = [
-    {
-      catergory: 'catergory',
-      id: 'id1',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id2',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id3',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id4',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id5',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id6',
-      amount: 'amount',
-    },
-    {
-      catergory: 'catergory',
-      id: 'id7',
-      amount: 'amount',
-    },
-  ];
-
   const [transactionList, setTransactionList] = useState([]);
   const user = useContext(AuthContext);
 
@@ -55,10 +17,14 @@ const TransactionScreen = () => {
         const transSnapshot = await getDocs(
           collection(db, 'users', user.uid, 'Transactions'),
         );
-        const transList = transSnapshot.docs.map(doc => doc.data());
-        setTransactionList(transList);
+        transSnapshot.forEach(doc => {
+          console.log(doc.data());
+        });
+        const list = transSnapshot.docs.map(x => x.data());
+        setTransactionList(list);
       } catch (err) {
         console.log(err);
+        console.log('what');
       }
     }
   };
@@ -67,15 +33,20 @@ const TransactionScreen = () => {
     React.useCallback(() => {
       if (user) {
         getData();
+        console.log('focus');
+        console.log(user.uid)
+
       }
     }, []),
   );
 
-  useEffect(()=>{
+  useEffect(() => {
     if (user) {
       getData();
+      console.log('with user');
+      console.log(user.uid)
     }
-  }, [user])
+  }, [user]);
 
   const onDelete = async index => {
     // Delete from database

@@ -18,7 +18,7 @@ const AppStack = () => {
           height,
         }}>
         <Tab.Navigator
-          initialRouteName="Transactions"
+          initialRouteName="Budget"
           screenOptions={{headerShown: false}}>
           <Tab.Screen name="Budget" component={BudgetScreen} />
           <Tab.Screen name="Transactions" component={TransactionScreen} />
