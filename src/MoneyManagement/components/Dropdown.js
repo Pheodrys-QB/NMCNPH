@@ -21,7 +21,7 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
         style={styles.dropdown}
         activeOpacity={0.8}
         onPress={() => setShow(!Show)}>
-        <Text style={{fontSize:15}}>{value}</Text>
+        <Text style={{fontSize:15}}>{value? value: "Select"}</Text>
       </TouchableOpacity>
       {Show && (
         <View style={{maxHeight: 200, backgroundColor:'#fff'}}>

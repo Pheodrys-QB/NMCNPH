@@ -31,8 +31,8 @@ const test = [
 
 const AddScreen = () => {
   const user = useContext(AuthContext);
-  const [selectedCat, setSelectedCat] = useState('Catergory v');
-  const [selectedWal, setSelectedWal] = useState('Wallet v');
+  const [selectedCat, setSelectedCat] = useState(null);
+  const [selectedWal, setSelectedWal] = useState(null);
   const [walletList, setWalletList] = useState([]);
   const [money, setMoney] = useState(null);
   const [note, setNote] = useState(null);
@@ -64,6 +64,9 @@ const AddScreen = () => {
   };
 
   const setData = async () => {
+    if (!selectedCat || !selectedWal || !money) {
+      return;
+    }
     const colRef = collection(db, 'users', user.uid, 'Transactions');
     const docRef = doc(colRef);
 
@@ -74,6 +77,7 @@ const AddScreen = () => {
         wallet: selectedWal,
         amount: money,
         note: note,
+        date: 'not ready',
       });
       console.log('done');
       console.log(user.uid);
@@ -87,15 +91,22 @@ const AddScreen = () => {
     setDate(null);
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     if (user) {
-  //       fetchWallet();
-  //       console.log('focus');
-  //       console.log(user.uid);
-  //     }
-  //   }, []),
-  // );
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        // fetchWallet();
+        // console.log('focus');
+        // console.log(user.uid);
+        let temp = new Date();
+        let d = temp.getDate();
+        let m = temp.getMonth() + 1;
+        let y = temp.getFullYear();
+        setDate(y + '-' + m + '-' + d);
+        console.log(date)
+        console.log(temp)
+      }
+    }, []),
+  );
 
   // useEffect(() => {
   //   if (user) {
