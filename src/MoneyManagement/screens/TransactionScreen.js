@@ -1,12 +1,15 @@
 import React, {useState, useContext, useEffect} from 'react';
-import {StyleSheet, Text, View, FlatList} from 'react-native';
+import {StyleSheet, Text, View, FlatList, Touchable, Dimensions,Image} from 'react-native';
 import TransTab from '../components/TransactionTab';
-
 import {db} from '../firebase-config';
 import {getDocs, collection, deleteDoc, doc} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
+import { createIconSet } from 'react-native-vector-icons';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
+
+const{height}=Dimensions.get('window');
 const TransactionScreen = () => {
   const [transactionList, setTransactionList] = useState([]);
   const user = useContext(AuthContext);
@@ -52,14 +55,48 @@ const TransactionScreen = () => {
     console.log('delete' + index.toString());
   };
 
+  function renderHeader(){
+    return(
+      <View style>
+        <View style={{padding:20, justifyContent: 'center',
+    alignItems: 'center',}}>
+          <Text style={{
+            color:'#000000',
+            fontSize:19,
+            fontWeight:'700',
+          }}>$14444</Text>
+        </View>
+        <View style={styles.textBalance}>
+          <Text style={{
+            color:'#000000',
+            fontSize:15,
+          }}>Account Balance</Text>
+        </View>
+        <Image source = {require('../assets/iconCalendar.png')}
+        style={{width:25, height:25}}>
+        </Image>
+        <View>
+          <View style={styles.textCalendar}>
+            <Text style={{
+            color:'#000000',
+            fontSize:14,
+          }}>13 Feb, 2022</Text>
+          </View>
+        </View>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.titleTop}>
-        <View></View>
         <Text style={styles.sectionTitle}>Transaction History</Text>
       </View>
 
-      <FlatList
+      {/*header section: calendar*/}
+      {renderHeader()}
+
+    <FlatList
         data={transactionList}
         renderItem={({item, index}) => {
           return <TransTab data={item} onDelete={onDelete} index={index} />;
@@ -72,9 +109,23 @@ const TransactionScreen = () => {
 export default TransactionScreen;
 
 const styles = StyleSheet.create({
+  textBalance:{
+    paddingTop: 20,
+    fontSize: 15,
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textCalendar:{
+    paddingTop: 20,
+    fontSize: 15,
+    fontWeight: 'bold',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#E8EAED',
+    backgroundColor: '#F5F5F5',
   },
 
   sectionTitle: {
@@ -84,11 +135,19 @@ const styles = StyleSheet.create({
   },
 
   titleTop: {
+//<<<<<<< Updated upstream
     paddingVertical:20,
     paddingHorizontal:20,
     backgroundColor: '#CB2635',
     height: 120,
     flexDirection:'column',
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+//=======
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: '#D6F6EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+//>>>>>>> Stashed changes
   },
 });
