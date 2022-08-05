@@ -24,7 +24,7 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
         <Text style={{fontSize:15}}>{value? value: "Select"}</Text>
       </TouchableOpacity>
       {Show && (
-        <View style={{maxHeight: 200, backgroundColor:'#fff'}}>
+        <View style={{maxHeight: 200, backgroundColor:'#F5F5F5'}}>
           <ScrollView>
             {data.map((val, index) => {
               return (
@@ -47,7 +47,7 @@ export default Dropdown;
 const styles = StyleSheet.create({
   dropdown: {
     paddingTop:5,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5',
     width: '100%',
     //shadowColor: '#000000',
     // shadowRadius: 4,
