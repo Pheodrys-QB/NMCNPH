@@ -7,6 +7,7 @@ import TransactionScreen from '../screens/TransactionScreen';
 import MoreScreen from '../screens/MoreScreen';
 import BudgetScreen from '../screens/BudgetScreen';
 import BillScreen from '../screens/BillScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 const Tab = createBottomTabNavigator();
 const {width, height} = Dimensions.get('window');
@@ -29,12 +30,12 @@ const AppStack = () => {
           tabBarActiveTintColor: "#e32f45"
         }}>
         <Tab.Screen
-          name="Budget"
-          component={BudgetScreen}
+          name="Home"
+          component={HomeScreen}
           options={{
               tabBarIcon: ({focused}) =>(
                 <View>
-                  <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}> home</Text>
+                  <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}>Home</Text>
                 </View>
               )
 
@@ -44,36 +45,44 @@ const AppStack = () => {
           name="Transactions"
           component={TransactionScreen}
           options={{
-            // tabBarIcon: ({color, size}) => (
-            //   <MaterialCommunityIcons name="home" color={color} size={size} />
-            // ),
+            tabBarIcon: ({focused}) =>(
+              <View>
+                <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}>Trans</Text>
+              </View>
+            )
           }}
         />
         <Tab.Screen
           name="Add"
           component={AddScreen}
           options={{
-            // tabBarIcon: ({color, size}) => (
-            //   <MaterialCommunityIcons name="home" color={color} size={size} />
-            // ),
+            tabBarIcon: ({focused}) =>(
+              <View>
+                <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}>Add</Text>
+              </View>
+            )
           }}
         />
         <Tab.Screen
           name="Bill"
           component={BillScreen}
           options={{
-            // tabBarIcon: ({color, size}) => (
-            //   <MaterialCommunityIcons name="home" color={color} size={size} />
-            // ),
+            tabBarIcon: ({focused}) =>(
+              <View>
+                <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}>Saving</Text>
+              </View>
+            )
           }}
         />
         <Tab.Screen
           name="More"
           component={MoreScreen}
           options={{
-            // tabBarIcon: ({color, size}) => (
-            //   <MaterialCommunityIcons name="home" color={color} size={size} />
-            // ),
+            tabBarIcon: ({focused}) =>(
+              <View>
+                <Text style={{color: focused? "#e32f45" : "#000", fontSize: 12,}}>More</Text>
+              </View>
+            )
           }}
         />
       </Tab.Navigator>

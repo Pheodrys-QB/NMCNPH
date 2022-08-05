@@ -93,20 +93,20 @@ const AddScreen = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (user) {
-        // fetchWallet();
-        // console.log('focus');
-        // console.log(user.uid);
-        let temp = new Date();
-        let d = temp.getDate();
-        let m = temp.getMonth() + 1;
-        let y = temp.getFullYear();
-        setDate(y + '-' + m + '-' + d);
-        console.log(date)
-        console.log(temp)
-      }
+      let today = new Date();
+      let date1 =
+        today.getFullYear().toString() +
+        '-' +
+        (today.getMonth() + 1).toString() +
+        '-' +
+        today.getDate().toString();
+      setDate(date1);
     }, []),
   );
+
+  useEffect(() => {
+    console.log(date);
+  }, [date]);
 
   // useEffect(() => {
   //   if (user) {
@@ -116,9 +116,15 @@ const AddScreen = () => {
   //   }
   // }, [user]);
 
+  const dummy = () => {
+    let x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'});
+    console.log(x);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.titleTop}>
+        <View></View>
         <Text style={styles.sectionTitle}>Add transaction</Text>
       </View>
       <ScrollView>
@@ -151,7 +157,7 @@ const AddScreen = () => {
           </View>
 
           <TouchableHighlight
-            onPress={setData}
+            onPress={dummy}
             style={styles.buttonView}
             underlayColor="#fff">
             <View style={styles.button}>
@@ -212,27 +218,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   titleTop: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
     backgroundColor: '#CB2635',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: 120,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
   },
   Wrapper: {
-    paddingTop: 20,
+    paddingTop: 30,
   },
   dropdownBar: {
     position: 'absolute',
     left: 30,
-    right: 30,
-    top: 100,
+    top: 150,
     flexDirection: 'row',
   },
   dropdownBar2: {
     position: 'absolute',
     left: 30,
     right: 30,
-    top: 100,
+    top: 150,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },

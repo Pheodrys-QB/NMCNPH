@@ -40,13 +40,6 @@ const TransactionScreen = () => {
     }, []),
   );
 
-  useEffect(() => {
-    if (user) {
-      getData();
-      console.log('with user');
-      console.log(user.uid)
-    }
-  }, [user]);
 
   const onDelete = async index => {
     // Delete from database
@@ -62,6 +55,7 @@ const TransactionScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.titleTop}>
+        <View></View>
         <Text style={styles.sectionTitle}>Transaction History</Text>
       </View>
 
@@ -82,22 +76,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E8EAED',
   },
-  tasksWrapper: {
-    //paddingTop: 20,
-    //paddingHorizontal: 20,
-  },
+
   sectionTitle: {
+    paddingTop: 20,
     fontSize: 24,
     fontWeight: 'bold',
   },
-  items: {
-    //marginTop: 10,
-  },
+
   titleTop: {
-    paddingTop: 20,
-    paddingBottom: 20,
+    paddingVertical:20,
+    paddingHorizontal:20,
     backgroundColor: '#CB2635',
-    justifyContent: 'center',
-    alignItems: 'center',
+    height: 120,
+    flexDirection:'column',
+    justifyContent:'space-between'
   },
 });
