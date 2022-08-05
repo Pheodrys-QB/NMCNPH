@@ -10,10 +10,10 @@ import {
 const Dropdown = ({value, data, onSelect = () => {}}) => {
   const [Show, setShow] = useState(false);
 
-  const onPressAction = (item) =>{
-    onSelect(item)
-    setShow(false)
-  }
+  const onPressAction = item => {
+    onSelect(item);
+    setShow(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -21,15 +21,17 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
         style={styles.dropdown}
         activeOpacity={0.8}
         onPress={() => setShow(!Show)}>
-        <Text>{value}</Text>
+        <Text style={{fontSize:15}}>{value}</Text>
       </TouchableOpacity>
       {Show && (
-        <View style={{maxHeight: 200}}>
+        <View style={{maxHeight: 200, backgroundColor:'#fff'}}>
           <ScrollView>
             {data.map((val, index) => {
               return (
-                <TouchableOpacity key={index} onPress={()=>onPressAction(val.catergory)}>
-                  <Text>{val.catergory}</Text>
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => onPressAction(val.catergory)}>
+                  <Text style={{fontSize: 15}}>{val.catergory}</Text>
                 </TouchableOpacity>
               );
             })}
@@ -44,7 +46,8 @@ export default Dropdown;
 
 const styles = StyleSheet.create({
   dropdown: {
-    backgroundColor: '#dcdcdc',
+    paddingTop:5,
+    backgroundColor: '#fff',
     width: '100%',
     //shadowColor: '#000000',
     // shadowRadius: 4,
@@ -52,7 +55,7 @@ const styles = StyleSheet.create({
     // shadowOpacity: 0.5,
   },
   container: {
-    backgroundColor: '#dcdcdc',
-    width: 100,
+    backgroundColor: '#000',
+    width: 125,
   },
 });

@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,9 +9,10 @@ import {
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
 import {db} from '../firebase-config';
-import {doc, collection, setDoc} from 'firebase/firestore';
+import {doc, getDocs, collection, setDoc} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
-
+import {async} from '@firebase/util';
+import {useFocusEffect} from '@react-navigation/native';
 
 const test = [
   {
@@ -30,10 +31,12 @@ const test = [
 
 const AddScreen = () => {
   const user = useContext(AuthContext);
-  const [selectedCat, setSelectedCat] = useState(null);
-  const [selectedWal, setSelectedWal] = useState(null);
+  const [selectedCat, setSelectedCat] = useState('Catergory v');
+  const [selectedWal, setSelectedWal] = useState('Wallet v');
+  const [walletList, setWalletList] = useState([]);
   const [money, setMoney] = useState(null);
   const [note, setNote] = useState(null);
+  const [date, setDate] = useState(null);
 
   const onSelectCatergory = item => {
     setSelectedCat(item);
@@ -42,6 +45,23 @@ const AddScreen = () => {
     setSelectedWal(item);
   };
 
+  const fetchWallet = async () => {
+    if (user) {
+      try {
+        const transSnapshot = await getDocs(
+          collection(db, 'users', user.uid, 'Wallets'),
+        );
+        transSnapshot.forEach(doc => {
+          console.log(doc.data());
+        });
+        const list = transSnapshot.docs.map(x => x.data());
+        setWalletList(list);
+      } catch (err) {
+        console.log(err);
+        console.log('what');
+      }
+    }
+  };
 
   const setData = async () => {
     const colRef = collection(db, 'users', user.uid, 'Transactions');
@@ -56,15 +76,34 @@ const AddScreen = () => {
         note: note,
       });
       console.log('done');
-      console.log(user.uid)
+      console.log(user.uid);
     } catch (err) {
       console.log(err);
     }
     setSelectedCat(null);
-      setSelectedWal(null);
-      setMoney(null);
-      setNote(null);
+    setSelectedWal(null);
+    setMoney(null);
+    setNote(null);
+    setDate(null);
   };
+
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     if (user) {
+  //       fetchWallet();
+  //       console.log('focus');
+  //       console.log(user.uid);
+  //     }
+  //   }, []),
+  // );
+
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchWallet();
+  //     console.log('with user');
+  //     console.log(user.uid);
+  //   }
+  // }, [user]);
 
   return (
     <View style={styles.container}>
@@ -75,7 +114,7 @@ const AddScreen = () => {
         <View style={styles.Wrapper}>
           <View style={{paddingTop: 50}}>
             <View style={styles.inputWrapper}>
-              <Text style={{paddingTop: 10}}>Amount: </Text>
+              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
               <TextInput
                 placeholder="Input money"
                 onChangeText={setMoney}
@@ -85,7 +124,7 @@ const AddScreen = () => {
               />
             </View>
             <View style={styles.inputWrapper} height={60}>
-              <Text style={{paddingTop: 10}}>Note: </Text>
+              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
               <TextInput
                 placeholder="Optional note"
                 onChangeText={setNote}
@@ -95,12 +134,11 @@ const AddScreen = () => {
               />
             </View>
             <View style={styles.inputWrapper}>
-              <Text>Date: </Text>
+              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
               <Text>DATETIMEPICKER</Text>
             </View>
           </View>
 
-          {/* onPress={() => dummy()} */}
           <TouchableHighlight
             onPress={setData}
             style={styles.buttonView}
@@ -111,18 +149,28 @@ const AddScreen = () => {
           </TouchableHighlight>
         </View>
       </ScrollView>
+
       <View style={styles.dropdownBar}>
         <View style={{flexDirection: 'row'}}>
-          <Text>Catergory: </Text>
+          <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
           <Dropdown
+            key={1}
             value={selectedCat}
             data={test}
             onSelect={onSelectCatergory}
           />
         </View>
-        <View style={{flexDirection: 'row', paddingLeft: 20}}>
-          <Text>Wallet: </Text>
-          <Dropdown value={selectedWal} data={test} onSelect={onSelectWallet} />
+      </View>
+      <View style={styles.dropdownBar2}>
+        <View></View>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
+          <Dropdown
+            key={2}
+            value={selectedWal}
+            data={test}
+            onSelect={onSelectWallet}
+          />
         </View>
       </View>
     </View>
@@ -164,13 +212,20 @@ const styles = StyleSheet.create({
   },
   dropdownBar: {
     position: 'absolute',
-    alignItems: 'baseline',
-    paddingHorizontal: 30,
-    paddingBottom: 10,
+    left: 30,
+    right: 30,
+    top: 100,
+    flexDirection: 'row',
+  },
+  dropdownBar2: {
+    position: 'absolute',
+    left: 30,
+    right: 30,
     top: 100,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+
   buttonView: {
     paddingTop: 10,
     marginHorizontal: 90,
@@ -178,13 +233,13 @@ const styles = StyleSheet.create({
   },
   moneyInput: {
     height: 40,
-    borderWidth: 1,
+    borderBottomWidth: 1,
     flex: 1,
     textAlignVertical: 'top',
   },
   noteInput: {
     textAlignVertical: 'top',
-    borderWidth: 1,
+    borderBottomWidth: 1,
     flex: 1,
     height: 40,
   },
