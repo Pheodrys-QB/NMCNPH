@@ -36,23 +36,23 @@ export default function MoreTab (){
                     <Text style={{fontSize:15,fontWeight:'bold',color:'grey'}}>20yo, Male</Text>
                     
                 </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'red',
+                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
                                 width:'90%',padding:20,paddingBottom:22,borderRadius:10,
                                 shadowOpacity:80,
                                 elevationL:15,
                                 marginTop:20}}>
-                    <Button color='red' title='User setting'></Button>
+                    <Button color='#fbaa60' title='User setting'></Button>
                     
                 </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'red',
+                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
                                 width:'90%',padding:20,paddingBottom:22,borderRadius:10,
                                 shadowOpacity:80,
                                 elevationL:15,
                                 marginTop:20}}>
-                    <Button color='red' title='Term of service'></Button>
+                    <Button color='#fbaa60' title='Term of service'></Button>
                     
                 </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'grey',
+                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
                                 width:'90%',padding:20,paddingBottom:22,borderRadius:10,
                                 shadowOpacity:80,
                                 elevationL:15,
