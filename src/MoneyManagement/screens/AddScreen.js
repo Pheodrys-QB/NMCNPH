@@ -6,13 +6,23 @@ import {
   TextInput,
   TouchableHighlight,
   ScrollView,
+  TouchableOpacity,
+  Image,
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
 import {db} from '../firebase-config';
 import {doc, getDocs, collection, setDoc} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
-import {async} from '@firebase/util';
 import {useFocusEffect} from '@react-navigation/native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+
+import 'intl';
+
+import 'intl/locale-data/jsonp/en';
+
+const dummy = () => {
+  console.log(new Intl.NumberFormat().format(10000));
+};
 
 const test = [
   {
@@ -36,7 +46,9 @@ const AddScreen = () => {
   const [walletList, setWalletList] = useState([]);
   const [money, setMoney] = useState(null);
   const [note, setNote] = useState(null);
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(new Date());
+  const [dateText, setDateText] = useState('');
+  const [show, setShow] = useState(false);
 
   const onSelectCatergory = item => {
     setSelectedCat(item);
@@ -60,6 +72,15 @@ const AddScreen = () => {
         console.log(err);
         console.log('what');
       }
+    }
+  };
+
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+    if (currentDate) {
+      let temp = new Date(currentDate);
     }
   };
 
@@ -88,24 +109,19 @@ const AddScreen = () => {
     setSelectedWal(null);
     setMoney(null);
     setNote(null);
-    setDate(null);
+    setDate(new Date());
   };
 
   useFocusEffect(
     React.useCallback(() => {
-      let today = new Date();
-      let date1 =
-        today.getFullYear().toString() +
-        '-' +
-        (today.getMonth() + 1).toString() +
-        '-' +
-        today.getDate().toString();
-      setDate(date1);
+      setDate(new Date());
     }, []),
   );
 
   useEffect(() => {
-    console.log(date);
+    let formatted =
+      date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    setDateText(formatted);
   }, [date]);
 
   // useEffect(() => {
@@ -116,22 +132,24 @@ const AddScreen = () => {
   //   }
   // }, [user]);
 
-  const dummy = () => {
-    let x = x.toLocaleString('it-IT', {style: 'currency', currency: 'VND'});
-    console.log(x);
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.titleTop}>
         <View></View>
-        <Text style={styles.sectionTitle}>Add transaction</Text>
+        <Text style={[styles.sectionTitle, {color: '#000000'}]}>
+          Add Transaction
+        </Text>
       </View>
       <ScrollView>
         <View style={styles.Wrapper}>
-          <View style={{paddingTop: 50}}>
+          <View style={{paddingTop: 40}}>
             <View style={styles.inputWrapper}>
-              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
+              <View style={{paddingTop: 15, paddingRight: 10}}>
+                <Image
+                  source={require('../assets/money.png')}
+                  style={{height: 20, width: 30, resizeMode: 'stretch'}}
+                />
+              </View>
               <TextInput
                 placeholder="Input money"
                 onChangeText={setMoney}
@@ -141,7 +159,12 @@ const AddScreen = () => {
               />
             </View>
             <View style={styles.inputWrapper} height={60}>
-              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
+              <View style={{paddingTop: 15, paddingRight: 15, paddingLeft: 5}}>
+                <Image
+                  source={require('../assets/note.png')}
+                  style={{height: 20, width: 20, resizeMode: 'stretch'}}
+                />
+              </View>
               <TextInput
                 placeholder="Optional note"
                 onChangeText={setNote}
@@ -151,25 +174,55 @@ const AddScreen = () => {
               />
             </View>
             <View style={styles.inputWrapper}>
-              <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
-              <Text>DATETIMEPICKER</Text>
+              <View style={{paddingRight: 15, paddingLeft: 5}}>
+                <Image
+                  source={require('../assets/calendar.png')}
+                  style={{height: 20, width: 20, resizeMode: 'stretch'}}
+                />
+              </View>
+              <TouchableOpacity
+                onPress={() => {
+                  setShow(true);
+                }}>
+                <View>
+                  <Text
+                    style={{
+                      paddingHorizontal: 10,
+                      fontSize: 20,
+                      color: '#000000',
+                    }}>
+                    {dateText}
+                  </Text>
+                  <View style={{borderColor: '#000', borderWidth: 0.5}}></View>
+                </View>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <TouchableHighlight
-            onPress={dummy}
-            style={styles.buttonView}
-            underlayColor="#fff">
-            <View style={styles.button}>
-              <Text>Add</Text>
-            </View>
-          </TouchableHighlight>
+          <View style={{height: 20}}></View>
+          <View style={{alignItems: 'center'}}>
+            <TouchableHighlight
+              onPress={dummy}
+              style={styles.buttonView}
+              underlayColor="#fff">
+              <View style={styles.button}>
+                <Text
+                  style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+                  Add
+                </Text>
+              </View>
+            </TouchableHighlight>
+          </View>
         </View>
       </ScrollView>
 
       <View style={styles.dropdownBar}>
         <View style={{flexDirection: 'row'}}>
-          <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
+          <View style={{paddingTop: 7, paddingRight: 15, paddingLeft:5}}>
+            <Image
+              source={require('../assets/tag.png')}
+              style={{height: 20, width: 20, resizeMode: 'stretch'}}
+            />
+          </View>
           <Dropdown
             key={1}
             value={selectedCat}
@@ -181,7 +234,12 @@ const AddScreen = () => {
       <View style={styles.dropdownBar2}>
         <View></View>
         <View style={{flexDirection: 'row'}}>
-          <Text style={{fontSize: 20, paddingRight: 10}}>pic</Text>
+          <View style={{paddingTop: 7, paddingRight: 15}}>
+            <Image
+              source={require('../assets/wallet.png')}
+              style={{height: 20, width: 20, resizeMode: 'stretch'}}
+            />
+          </View>
           <Dropdown
             key={2}
             value={selectedWal}
@@ -190,6 +248,16 @@ const AddScreen = () => {
           />
         </View>
       </View>
+
+      {show && (
+        <DateTimePicker
+          testID="DateTimePicker"
+          value={date}
+          mode={'date'}
+          display={'default'}
+          onChange={onChangeDate}
+        />
+      )}
     </View>
   );
 };
@@ -199,9 +267,9 @@ export default AddScreen;
 const styles = StyleSheet.create({
   button: {
     alignItems: 'center',
-    backgroundColor: '#68a0cf',
+    backgroundColor: '#FBAA60',
     padding: 10,
-    borderRadius: 5,
+    borderRadius: 25,
   },
   inputWrapper: {
     flexDirection: 'row',
@@ -211,7 +279,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#F5F5F5',
   },
   sectionTitle: {
     fontSize: 24,
@@ -220,7 +288,7 @@ const styles = StyleSheet.create({
   titleTop: {
     paddingVertical: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#CB2635',
+    backgroundColor: '#D6F6EB',
     height: 120,
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -245,8 +313,7 @@ const styles = StyleSheet.create({
 
   buttonView: {
     paddingTop: 10,
-    marginHorizontal: 90,
-    //position: 'absolute',
+    width: '60%',
   },
   moneyInput: {
     height: 40,

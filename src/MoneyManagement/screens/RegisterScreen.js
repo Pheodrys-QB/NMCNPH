@@ -21,7 +21,7 @@ const RegisterScreen = () => {
 
   const Register = async () => {
     try {
-      const user = await createUserWithEmailAndPassword(auth, email, password);
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
     } catch (err) {
       console.log(err);
     }
