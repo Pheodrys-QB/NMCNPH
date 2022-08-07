@@ -1,18 +1,20 @@
-import React from 'react';
-import {Text, View} from 'react-native';
+import React, {Component} from 'react';
+import {Text, View, ActivityIndicator} from 'react-native';
 
-const BudgetScreen = () => {
-  return (
-    <View style={{
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-  }}>
-      <Text>Welcome!!!</Text>
-    </View>
-  );
-};
+class Holder extends Component {
+  componentDidMount() {
+    setTimeout(() => {
+      this.props.navigation.navigate('AppStack');
+    }, 1000);
+  }
+  render() {
+    return (
+      <View
+        style={{backgroundColor: '#F5F5F5', alignItems:'center', justifyContent: 'center', flex: 1}}>
+        <ActivityIndicator size={'large'} color={'blue'} style={{margin: 10}} />
+      </View>
+    );
+  }
+}
 
-
-
-export default BudgetScreen;
+export default Holder;

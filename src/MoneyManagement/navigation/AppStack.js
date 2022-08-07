@@ -1,5 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import {View, Dimensions, Text, Image} from 'react-native';
 
 import AddScreen from '../screens/AddScreen';
@@ -9,7 +10,11 @@ import SavingScreen from '../screens/SavingScreen';
 import HomeScreen from '../screens/HomeScreen';
 
 const Tab = createBottomTabNavigator();
+
 const {width, height} = Dimensions.get('window');
+
+
+
 const AppStack = () => {
   return (
     <View
@@ -32,7 +37,7 @@ const AppStack = () => {
           component={HomeScreen}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center' , justifyContent:'center'}}>
+              <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:15}}>
                 <Image
                   source={require('../assets/home.png')}
                   resizeMode={'contain'}
@@ -51,7 +56,7 @@ const AppStack = () => {
           component={TransactionScreen}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center' , justifyContent:'center'}}>
+              <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:15}}>
                 <Image
                   source={require('../assets/transactions.png')}
                   resizeMode={'contain'}
@@ -70,7 +75,7 @@ const AppStack = () => {
           component={AddScreen}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center' , justifyContent:'center'}}>
+              <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:30}}>
                 <Image
                   source={require('../assets/add.png')}
                   resizeMode={'contain'}
@@ -86,7 +91,7 @@ const AppStack = () => {
           component={SavingScreen}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center' , justifyContent:'center'}}>
+              <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:15}}>
                 <Image
                   source={require('../assets/saving.png')}
                   resizeMode={'contain'}
@@ -105,7 +110,7 @@ const AppStack = () => {
           component={MoreScreen}
           options={{
             tabBarIcon: ({focused}) => (
-              <View style={{alignItems: 'center' , justifyContent:'center'}}>
+              <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:15}}>
                 <Image
                   source={require('../assets/more.png')}
                   resizeMode={'contain'}
