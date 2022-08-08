@@ -55,7 +55,7 @@ const TransactionScreen = () => {
       doc(db, 'users', user.uid, 'Transactions', transactionList[index].id),
     );
     setTransactionList(current =>
-      current.filter((transactionList, i) => i !== index),
+      current.filter((item, i) => i !== index),
     );
     console.log('delete' + index.toString());
   };

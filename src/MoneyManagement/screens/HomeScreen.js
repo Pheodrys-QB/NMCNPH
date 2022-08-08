@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TouchableHighlight,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import TransTab from '../components/TransactionTab';
 
@@ -21,10 +22,39 @@ import {
 } from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
+import WalletTab from '../components/WalletTab';
 
 const {width, height} = Dimensions.get('window');
 
 const HomeScreen = () => {
+  const WalletTest = [
+    {
+      name: 'name',
+      id: '1',
+      amount: '10000',
+    },
+    {
+      name: 'name',
+      id: '2',
+      amount: '10000',
+    },
+    {
+      name: 'name',
+      id: '3',
+      amount: '10000',
+    },
+    {
+      name: 'name',
+      id: '4',
+      amount: '10000',
+    },
+    {
+      name: 'name',
+      id: '5',
+      amount: '10000',
+    },
+  ];
+
   const user = useContext(AuthContext);
 
   const [showWallet, setShowWallet] = useState(false);
@@ -37,6 +67,17 @@ const HomeScreen = () => {
 
   const [name, setName] = useState(null);
   const [amount, setAmount] = useState(null);
+
+  const [newWallet, setNewWallet] = useState(null);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setWalletList([...WalletTest]);
+      console.log('home');
+    }, []),
+  );
+
+  const handleAddWallet = () => {};
 
   const dummy = () => {};
 
@@ -67,7 +108,7 @@ const HomeScreen = () => {
           console.log(doc.data());
         });
         const list = transSnapshot.docs.map(x => x.data());
-        setTransactionList(list);
+        setWalletList(list);
       } catch (err) {
         console.log(err);
         console.log('what');
@@ -79,7 +120,7 @@ const HomeScreen = () => {
     if (!name || !amount) {
       return;
     }
-    const colRef = collection(db, 'users', user.uid, 'Transactions');
+    const colRef = collection(db, 'users', user.uid, 'Wallets');
     const docRef = doc(colRef);
 
     try {
@@ -95,6 +136,15 @@ const HomeScreen = () => {
     setAmount(null);
     setName(null);
     setShowCreate(false);
+  };
+
+  const onDelete = async index => {
+    // Delete from database
+    // await deleteDoc(
+    //   doc(db, 'users', user.uid, 'Wallets', walletList[index].id),
+    // );
+    setWalletList(current => current.filter((item, i) => i !== index));
+    console.log('delete' + index.toString());
   };
 
   return (
@@ -151,18 +201,17 @@ const HomeScreen = () => {
                   </View>
                 </TouchableOpacity>
                 <View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
+                  {walletList.map((item, index) => {
+                    return (
+                      <View key={index}>
+                        <WalletTab
+                          data={item}
+                          onDelete={onDelete}
+                          index={index}
+                        />
+                      </View>
+                    );
+                  })}
                   <View
                     style={{
                       borderColor: '#000',
@@ -303,12 +352,23 @@ const HomeScreen = () => {
           <TouchableOpacity
             onPress={() => {
               setShowCreate(false);
-              setName(null)
-              setAmount(null)
+              setName(null);
+              setAmount(null);
             }}>
             <View style={styles.createContainer}></View>
           </TouchableOpacity>
-          <View style={styles.createPrompt}></View>
+          <View style={styles.createPrompt}>
+            <Text>New Wallet</Text>
+            <View>
+              <Text>Name</Text>
+            </View>
+            <View>
+              <Text>Money</Text>
+            </View>
+            <View>
+              <Text>cancel + create</Text>
+            </View>
+          </View>
         </View>
       )}
     </View>
@@ -393,8 +453,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '80%',
     height: 300,
-    backgroundColor: '#fff',
+    backgroundColor: '#F5F5F5',
     left: width * 0.1,
     top: height / 4,
+    borderRadius: 25,
   },
 });

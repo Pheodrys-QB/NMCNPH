@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
 import {db} from '../firebase-config';
-import {doc, getDocs, collection, setDoc} from 'firebase/firestore';
+import {doc, getDocs, collection, setDoc, Timestamp} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -91,14 +91,16 @@ const AddScreen = () => {
     const colRef = collection(db, 'users', user.uid, 'Transactions');
     const docRef = doc(colRef);
 
+    const newDate = Timestamp.fromDate(new Date(dateText));
+
     try {
       await setDoc(docRef, {
         id: docRef.id,
         catergory: selectedCat,
-        wallet: selectedWal,
+        walletID: selectedWal,
         amount: money,
         note: note,
-        date: 'not ready',
+        date: newDate,
       });
       console.log('done');
       console.log(user.uid);
@@ -119,8 +121,16 @@ const AddScreen = () => {
   );
 
   useEffect(() => {
-    let formatted =
-      date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+    let fYear = date.getFullYear();
+    let fMonth = date.getMonth() + 1;
+    let fDate = date.getDate();
+    if (fMonth < 10) {
+      fMonth = '0' + fMonth;
+    }
+    if (fDate < 10) {
+      fDate = '0' + fDate;
+    }
+    let formatted = fDate + '-' + fMonth + '-' + fDate;
     setDateText(formatted);
   }, [date]);
 
@@ -217,7 +227,7 @@ const AddScreen = () => {
 
       <View style={styles.dropdownBar}>
         <View style={{flexDirection: 'row'}}>
-          <View style={{paddingTop: 7, paddingRight: 15, paddingLeft:5}}>
+          <View style={{paddingTop: 7, paddingRight: 15, paddingLeft: 5}}>
             <Image
               source={require('../assets/tag.png')}
               style={{height: 20, width: 20, resizeMode: 'stretch'}}
