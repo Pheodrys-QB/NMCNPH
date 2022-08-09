@@ -9,7 +9,6 @@ import {
   Dimensions,
   FlatList,
 } from 'react-native';
-import TransTab from '../components/TransactionTab';
 
 import {db} from '../firebase-config';
 import {
@@ -19,10 +18,13 @@ import {
   doc,
   query,
   where,
+  setDoc,
 } from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
+
 import WalletTab from '../components/WalletTab';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('window');
 
@@ -61,29 +63,49 @@ const HomeScreen = () => {
   const [showTransactions, setShowTransactions] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
 
-  const [activeWallet, setActiveWallet] = useState('stored id');
-  const [curwallet, setCurWallet] = useState('{wallet.name}');
+  const [storedWallet, setStoredWallet] = useState(null);
+  const [curwallet, setCurWallet] = useState(null);
   const [walletList, setWalletList] = useState([]);
 
-  const [name, setName] = useState(null);
-  const [amount, setAmount] = useState(null);
+  const [name, setName] = useState('test');
+  const [amount, setAmount] = useState('1000');
 
-  const [newWallet, setNewWallet] = useState(null);
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     setWalletList([...WalletTest]);
+  //     console.log('home');
+  //   }, []),
+  // );
 
-  useFocusEffect(
-    React.useCallback(() => {
-      setWalletList([...WalletTest]);
-      console.log('home');
-    }, []),
-  );
+  const updateStoredID = async () => {
+    if (storedWallet) {
+      try {
+        await AsyncStorage.setItem('StoredID', storedWallet);
+        console.log('store: ', storedWallet);
+      } catch (err) {
+        console.log(err);
+      }
+    } else {
+      try {
+        await AsyncStorage.removeItem('StoredID');
+        console.log('store: ', storedWallet);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
 
-  const handleAddWallet = () => {};
-
-  const dummy = () => {};
+  useEffect(() => {
+    fetchWallet();
+  }, []);
 
   const fetchWallet = async () => {
     if (user) {
       try {
+        let res = await AsyncStorage.getItem('StoredID');
+        console.log('get ', res);
+        setStoredWallet(res);
+
         const transSnapshot = await getDocs(
           collection(db, 'users', user.uid, 'Wallets'),
         );
@@ -91,7 +113,13 @@ const HomeScreen = () => {
           console.log(doc.data());
         });
         const list = transSnapshot.docs.map(x => x.data());
-        setWalletList(list);
+        setWalletList([...list]);
+        let d = list.find(e => e.id == res);
+        if (d) {
+          setCurWallet(d);
+        } else {
+          setStoredWallet(null);
+        }
       } catch (err) {
         console.log(err);
       }
@@ -100,18 +128,20 @@ const HomeScreen = () => {
 
   const getData = async () => {
     if (user) {
-      try {
-        const transSnapshot = await getDocs(
-          collection(db, 'users', user.uid, 'Transactions'),
-        );
-        transSnapshot.forEach(doc => {
-          console.log(doc.data());
-        });
-        const list = transSnapshot.docs.map(x => x.data());
-        setWalletList(list);
-      } catch (err) {
-        console.log(err);
-        console.log('what');
+      if (curwallet) {
+        const transRef = collection(db, 'users', user.uid, 'Transactions');
+        const q = query(transRef, where('walletID', '==', curwallet.id));
+        try {
+          const transSnapshot = await getDocs(q);
+          transSnapshot.forEach(doc => {
+            console.log(doc.data());
+          });
+          const list = transSnapshot.docs.map(x => x.data());
+          setWalletList(list);
+        } catch (err) {
+          console.log(err);
+          console.log('what');
+        }
       }
     }
   };
@@ -124,12 +154,10 @@ const HomeScreen = () => {
     const docRef = doc(colRef);
 
     try {
-      await setDoc(docRef, {
-        id: docRef.id,
-        name: name,
-        amount: amount,
-      });
+      let data = {id: docRef.id, name: name, amount: amount};
+      await setDoc(docRef, data);
       console.log('done');
+      setWalletList([...walletList, data]);
     } catch (err) {
       console.log(err);
     }
@@ -143,8 +171,23 @@ const HomeScreen = () => {
     // await deleteDoc(
     //   doc(db, 'users', user.uid, 'Wallets', walletList[index].id),
     // );
-    setWalletList(current => current.filter((item, i) => i !== index));
+    let select = walletList[index];
+    if (curwallet.id == select.id) {
+      setCurWallet(null);
+      setStoredWallet(null);
+      await AsyncStorage.removeItem('StoredID');
+    }
+    let list = walletList.filter((item, i) => i !== index);
+    setWalletList([...list]);
     console.log('delete' + index.toString());
+  };
+
+  const onSelect = async index => {
+    let select = walletList[index];
+    setCurWallet(select);
+    setStoredWallet(select.id);
+    await AsyncStorage.setItem('StoredID', select.id);
+    console.log('select' + index.toString());
   };
 
   return (
@@ -152,9 +195,9 @@ const HomeScreen = () => {
       <View style={styles.titleTop}></View>
       <View style={styles.balance}>
         <Text style={{fontSize: 30, fontWeight: 'bold', color: '#000000'}}>
-          {curwallet} đ
+          {curwallet? (curwallet.amount + ' đ') : "No wallet selected"}  
         </Text>
-        <Text style={{color: '#000000'}}>Account balance: {curwallet}</Text>
+        <Text style={{color: '#000000'}}>Account balance: {curwallet.name}</Text>
       </View>
 
       <View style={{width: '100%', flex: 1}}>
@@ -207,6 +250,7 @@ const HomeScreen = () => {
                         <WalletTab
                           data={item}
                           onDelete={onDelete}
+                          onSelect={onSelect}
                           index={index}
                         />
                       </View>
@@ -219,7 +263,7 @@ const HomeScreen = () => {
                     }}></View>
                   <TouchableOpacity
                     onPress={() => {
-                      setShowCreate(true);
+                      createWallet();
                     }}>
                     <View
                       style={{
@@ -333,7 +377,7 @@ const HomeScreen = () => {
           <View style={{height: 50}}></View>
 
           <TouchableHighlight
-            onPress={dummy}
+            // onPress={dummy}
             style={styles.buttonView}
             underlayColor="#fff">
             <View style={styles.button}>

@@ -97,7 +97,7 @@ const AddScreen = () => {
       await setDoc(docRef, {
         id: docRef.id,
         catergory: selectedCat,
-        walletID: selectedWal,
+        walletID: selectedWal.id,
         amount: money,
         note: note,
         date: newDate,
@@ -130,7 +130,7 @@ const AddScreen = () => {
     if (fDate < 10) {
       fDate = '0' + fDate;
     }
-    let formatted = fDate + '-' + fMonth + '-' + fDate;
+    let formatted = fYear + '-' + fMonth + '-' + fDate;
     setDateText(formatted);
   }, [date]);
 

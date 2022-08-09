@@ -2,10 +2,10 @@ import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {Swipeable, GestureHandlerRootView} from 'react-native-gesture-handler';
 
-const WalletTab = ({data, index, onDelete = () => {}}) => {
+const WalletTab = ({data, index, onDelete = () => {}, onSelect = () => {}}) => {
   const rightSwipe = () => {
     return (
-      <TouchableOpacity activeOpacity={0.5} onPress={()=>onDelete(index)}>
+      <TouchableOpacity activeOpacity={0.5} onPress={() => onDelete(index)}>
         <View style={styles.deleteBox}>
           <Text>Delete</Text>
         </View>
@@ -14,8 +14,15 @@ const WalletTab = ({data, index, onDelete = () => {}}) => {
   };
   return (
     <GestureHandlerRootView>
-      <Swipeable renderRightActions={rightSwipe} overshootRight={false} key={data.id}>
-        <View style={styles.item}>
+      <Swipeable
+        renderRightActions={rightSwipe}
+        overshootRight={false}
+        key={data.id}>
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => {
+            onSelect(index)
+          }}>
           <View style={styles.itemLeft}>
             <View style={styles.square}></View>
             <Text style={styles.itemText}>
@@ -25,7 +32,7 @@ const WalletTab = ({data, index, onDelete = () => {}}) => {
           <View style={styles.itemRight}>
             <Text>{data.amount}</Text>
           </View>
-        </View>
+        </TouchableOpacity>
       </Swipeable>
     </GestureHandlerRootView>
   );
