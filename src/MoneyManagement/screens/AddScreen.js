@@ -16,26 +16,26 @@ import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import 'intl';
+// import 'intl';
 
-import 'intl/locale-data/jsonp/en';
+// import 'intl/locale-data/jsonp/en';
 
-const dummy = () => {
-  console.log(new Intl.NumberFormat().format(10000));
-};
+// const dummy = () => {
+//   console.log(new Intl.NumberFormat().format(10000));
+// };
 
 const test = [
   {
-    catergory: 'food',
+    name: 'food',
   },
   {
-    catergory: 'drink',
+    name: 'drink',
   },
   {
-    catergory: 'transport',
+    name: 'transport',
   },
   {
-    catergory: 'housing',
+    name: 'housing',
   },
 ];
 
@@ -67,10 +67,9 @@ const AddScreen = () => {
           console.log(doc.data());
         });
         const list = transSnapshot.docs.map(x => x.data());
-        setWalletList(list);
+        setWalletList([...list]);
       } catch (err) {
         console.log(err);
-        console.log('what');
       }
     }
   };
@@ -96,14 +95,13 @@ const AddScreen = () => {
     try {
       await setDoc(docRef, {
         id: docRef.id,
-        catergory: selectedCat,
+        catergory: selectedCat.name,
         walletID: selectedWal.id,
-        amount: money,
+        amount: parseInt(money),
         note: note,
         date: newDate,
       });
       console.log('done');
-      console.log(user.uid);
     } catch (err) {
       console.log(err);
     }
@@ -134,13 +132,11 @@ const AddScreen = () => {
     setDateText(formatted);
   }, [date]);
 
-  // useEffect(() => {
-  //   if (user) {
-  //     fetchWallet();
-  //     console.log('with user');
-  //     console.log(user.uid);
-  //   }
-  // }, [user]);
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchWallet();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
@@ -211,7 +207,7 @@ const AddScreen = () => {
           <View style={{height: 20}}></View>
           <View style={{alignItems: 'center'}}>
             <TouchableHighlight
-              onPress={dummy}
+              onPress={setData}
               style={styles.buttonView}
               underlayColor="#fff">
               <View style={styles.button}>
@@ -253,7 +249,7 @@ const AddScreen = () => {
           <Dropdown
             key={2}
             value={selectedWal}
-            data={test}
+            data={walletList}
             onSelect={onSelectWallet}
           />
         </View>

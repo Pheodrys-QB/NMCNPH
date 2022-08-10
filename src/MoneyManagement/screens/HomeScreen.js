@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   Dimensions,
   FlatList,
+  Button,
 } from 'react-native';
 
 import {db} from '../firebase-config';
@@ -19,6 +20,7 @@ import {
   query,
   where,
   setDoc,
+  TextInput,
 } from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
@@ -29,34 +31,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const {width, height} = Dimensions.get('window');
 
 const HomeScreen = () => {
-  const WalletTest = [
-    {
-      name: 'name',
-      id: '1',
-      amount: '10000',
-    },
-    {
-      name: 'name',
-      id: '2',
-      amount: '10000',
-    },
-    {
-      name: 'name',
-      id: '3',
-      amount: '10000',
-    },
-    {
-      name: 'name',
-      id: '4',
-      amount: '10000',
-    },
-    {
-      name: 'name',
-      id: '5',
-      amount: '10000',
-    },
-  ];
-
   const user = useContext(AuthContext);
 
   const [showWallet, setShowWallet] = useState(false);
@@ -195,9 +169,11 @@ const HomeScreen = () => {
       <View style={styles.titleTop}></View>
       <View style={styles.balance}>
         <Text style={{fontSize: 30, fontWeight: 'bold', color: '#000000'}}>
-          {curwallet? (curwallet.amount + ' đ') : "No wallet selected"}  
+          {curwallet ? curwallet.amount + ' đ' : 'No wallet selected'}
         </Text>
-        <Text style={{color: '#000000'}}>Account balance: {curwallet.name}</Text>
+        <Text style={{color: '#000000'}}>
+          Account balance: {curwallet?.name}
+        </Text>
       </View>
 
       <View style={{width: '100%', flex: 1}}>
@@ -263,7 +239,7 @@ const HomeScreen = () => {
                     }}></View>
                   <TouchableOpacity
                     onPress={() => {
-                      createWallet();
+                      showCreate(true);
                     }}>
                     <View
                       style={{
@@ -376,7 +352,7 @@ const HomeScreen = () => {
           </View>
           <View style={{height: 50}}></View>
 
-          <TouchableHighlight
+          {/* <TouchableHighlight
             // onPress={dummy}
             style={styles.buttonView}
             underlayColor="#fff">
@@ -387,7 +363,7 @@ const HomeScreen = () => {
               </Text>
             </View>
           </TouchableHighlight>
-          <View style={{height: 100}}></View>
+          <View style={{height: 100}}></View> */}
         </ScrollView>
       </View>
 
@@ -402,16 +378,20 @@ const HomeScreen = () => {
             <View style={styles.createContainer}></View>
           </TouchableOpacity>
           <View style={styles.createPrompt}>
-            <Text>New Wallet</Text>
-            <View>
-              <Text>Name</Text>
-            </View>
-            <View>
-              <Text>Money</Text>
-            </View>
-            <View>
-              <Text>cancel + create</Text>
-            </View>
+            <ScrollView>
+              <Text>New Wallet</Text>
+              <View>
+                <Text>Name</Text>
+                <TextInput />
+              </View>
+              <View>
+                <Text>Money</Text>
+                <TextInput />
+              </View>
+              <View>
+                <Button title={'Create'} onPress={createWallet}/>
+              </View>
+            </ScrollView>
           </View>
         </View>
       )}

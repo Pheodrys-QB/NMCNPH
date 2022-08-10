@@ -21,7 +21,7 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
         style={styles.dropdown}
         activeOpacity={0.8}
         onPress={() => setShow(!Show)}>
-        <Text style={{fontSize:15}}>{value? value: "Select"}</Text>
+        <Text style={{fontSize:15}}>{value? value.name: "Select"}</Text>
       </TouchableOpacity>
       {Show && (
         <View style={{maxHeight: 200, backgroundColor:'#F5F5F5'}}>
@@ -30,8 +30,8 @@ const Dropdown = ({value, data, onSelect = () => {}}) => {
               return (
                 <TouchableOpacity
                   key={index}
-                  onPress={() => onPressAction(val.catergory)}>
-                  <Text style={{fontSize: 15}}>{val.catergory}</Text>
+                  onPress={() => onPressAction(val)}>
+                  <Text style={{fontSize: 15}}>{val.name}</Text>
                 </TouchableOpacity>
               );
             })}
