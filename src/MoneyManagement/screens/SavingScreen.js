@@ -5,7 +5,8 @@ import {
     View,
     TouchableOpacity,
     ScrollView,
-    TextInput,
+    Button,
+    Dimensions,
   } from 'react-native';
 
   const test = [
@@ -18,45 +19,25 @@ import {
         <View style={styles.titleTop}>
           <Text style={styles.sectionTitle}>Savings</Text>
         </View>
-        <View style={styles.total}>
-          <Text>SAVE</Text>
+
+        <View style={{height: 35}}></View>
+
+        <View style={styles.box}>
+          <Text style={styles.nameSaving}>Name</Text>
+          <View style={{left: 30, width: 250, top: 17, padding: 0.5, backgroundColor: '#000000'}}></View>
         </View>
 
-        <TextInput
-              placeholder="Input saving plan"
-              keyboardType="decimal-pad"
-            />
-        <View style={{padding: 0.5, backgroundColor: '#000000'}}/>
-        <TextInput
-              placeholder="Input mount of money"
-              keyboardType="decimal-pad"
-            />
-        <View style={{padding: 0.5, backgroundColor: '#000000'}}/>
-        <TextInput
-              placeholder="Input due date"
-              keyboardType="decimal-pad"
-            />
+        <View style={{height: 130}}></View>
 
-        <View style={{padding: 0.5, backgroundColor: '#000000'}}/>
-        <ScrollView
-          contentContainerStyle={{flexGrow: 1}}>
-          <View style={styles.tasksWrapper}>
-            
-            <View style={styles.items}>
-              {
-                test.map((item, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                    >
-                    </TouchableOpacity>
-                  );
-                })
-              }
-            </View>
-          </View>
-        </ScrollView>
+        <View style={styles.button}>
+          <Text
+            style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+            Add
+          </Text>
+        </View>
+        
       </View>
+      
       
     );
   };
@@ -65,14 +46,14 @@ import {
 
 const styles = StyleSheet.create({
   total:{
-    backgroundColor:'#fffacd',
+    backgroundColor:'#F5F5F5',
     paddingBottom: 10,
     paddingRight: 30,
     alignContent:'center', 
     alignItems:'flex-end'
   },
   flowBar:{
-    backgroundColor:'#fffacd',
+    backgroundColor:'#FBAA60',
     paddingHorizontal: 30,
     paddingVertical: 5,
     flexDirection: 'row',
@@ -80,24 +61,50 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#E8EAED',
-  },
-  tasksWrapper: {
-   
+    backgroundColor: '#F5F5F5',
   },
   sectionTitle: {
+    paddingTop: 20,
     fontSize: 24,
+    color: '#000000',
     fontWeight: 'bold',
   },
-  items: {
-  
+  nameSaving: {
+    paddingTop: 20,
+    fontSize: 18,
+    color: '#000000',
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  box:{
+    height: 217,
+    width: 310,
+    borderRadius: 25,
+    backgroundColor: '#D6F6EB',
+    left: 40
+   
   },
   titleTop: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    backgroundColor: '#ff7f50',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    backgroundColor: '#CB2635',
+    height: 120,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  
+    paddingTop: 20,
+    paddingBottom: 20,
+    backgroundColor: '#D6F6EB',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  button: {
+    left: 150,
+    alignItems: 'center',
+    width: 100,
+    backgroundColor: '#FBAA60',
+    padding: 10,
+    borderRadius: 25,
   },
 });
 
