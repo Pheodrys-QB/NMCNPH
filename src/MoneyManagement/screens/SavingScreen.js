@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     width: 310,
     borderRadius: 25,
     backgroundColor: '#D6F6EB',
-    left: 40
+    alignSelf: 'center',
    
   },
   titleTop: {
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    left: 150,
+    alignSelf: 'center',
     alignItems: 'center',
     width: 100,
     backgroundColor: '#FBAA60',

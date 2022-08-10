@@ -85,17 +85,24 @@ const TransactionScreen = () => {
         </View>
         <Image
           source={require('../assets/iconCalendar.png')}
-          style={{width: 25, height: 25}}></Image>
+          style={{left: 80, width: 25, height: 25}}></Image>
         <View>
           <View style={styles.textCalendar}>
             <Text
-              style={{
-                color: '#000000',
-                fontSize: 14,
-              }}>
+              style={{color: '#000000',fontSize: 14,}}>
               13 Feb, 2022
             </Text>
           </View>
+        </View>
+        <View style={{height: 20}}></View>
+        <View style={styles.box}>
+          <Text></Text>
+        </View>
+        <View style={styles.button}>
+          <Text
+            style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+            View Report
+          </Text>
         </View>
       </View>
     );
@@ -150,19 +157,34 @@ const styles = StyleSheet.create({
   },
 
   titleTop: {
-    //<<<<<<< Updated upstream
     paddingVertical: 20,
     paddingHorizontal: 20,
     backgroundColor: '#CB2635',
     height: 120,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    //=======
+   
     paddingTop: 20,
     paddingBottom: 20,
     backgroundColor: '#D6F6EB',
     justifyContent: 'center',
     alignItems: 'center',
-    //>>>>>>> Stashed changes
+  
+  },
+  box:{
+    height: 217,
+    width: 310,
+    borderRadius: 25,
+    backgroundColor: '#D6F6EB',
+    alignSelf: 'center',
+  },
+  button: {
+    alignSelf: 'center',
+    top: 20,
+    alignItems: 'center',
+    width: 200,
+    backgroundColor: '#FBAA60',
+    padding: 10,
+    borderRadius: 25,
   },
 });
