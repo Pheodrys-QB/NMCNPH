@@ -4,29 +4,87 @@ import {
   Text,
   View,
   FlatList,
-  Touchable,
+  TouchableOpacity,
   Dimensions,
   Image,
 } from 'react-native';
 import TransTab from '../components/TransactionTab';
 import {db} from '../firebase-config';
-import {getDocs, collection, deleteDoc, doc} from 'firebase/firestore';
+import {
+  getDocs,
+  collection,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  Timestamp,
+  getDoc,
+} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import {createIconSet} from 'react-native-vector-icons';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const {height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 const TransactionScreen = () => {
   const [transactionList, setTransactionList] = useState([]);
   const user = useContext(AuthContext);
+  const [date, setDate] = useState(new Date());
+  const [dateText, setDateText] = useState('');
+  const [show, setShow] = useState(false);
+  const [wallet, setWallet] = useState(null);
 
-  const getData = async () => {
+  const onChangeDate = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setDate(new Date());
+    }, []),
+  );
+
+  useEffect(() => {
+    let fYear = date.getFullYear();
+    let fMonth = date.getMonth() + 1;
+    let fDate = date.getDate();
+    if (fMonth < 10) {
+      fMonth = '0' + fMonth;
+    }
+    if (fDate < 10) {
+      fDate = '0' + fDate;
+    }
+    let formatted = fYear + '-' + fMonth + '-' + fDate;
+    setDateText(formatted);
+    getData(formatted);
+  }, [date]);
+
+  const getWallet = async (res) => {
+    const docRef = doc(db, 'users', user.uid, 'Wallets', res)
+    const walletData = await getDoc(docRef);
+    console.log(walletData.data())
+    setWallet(walletData.data());
+  };
+
+  const getData = async timeText => {
     if (user) {
+      let res = await AsyncStorage.getItem('StoredID');
+      console.log(res);
+      getWallet(res)
+
+      const newDate = Timestamp.fromDate(new Date(timeText));
+      const transCol = collection(db, 'users', user.uid, 'Transactions');
+      const q = query(
+        transCol,
+        where('date', '==', newDate),
+        where('walletID', '==', res),
+      );
+
       try {
-        const transSnapshot = await getDocs(
-          collection(db, 'users', user.uid, 'Transactions'),
-        );
+        const transSnapshot = await getDocs(q);
         transSnapshot.forEach(doc => {
           console.log(doc.data());
         });
@@ -39,24 +97,12 @@ const TransactionScreen = () => {
     }
   };
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     if (user) {
-  //       getData();
-  //       console.log('focus');
-  //       console.log(user.uid);
-  //     }
-  //   }, []),
-  // );
-
   const onDelete = async index => {
     // Delete from database
     await deleteDoc(
       doc(db, 'users', user.uid, 'Transactions', transactionList[index].id),
     );
-    setTransactionList(current =>
-      current.filter((item, i) => i !== index),
-    );
+    setTransactionList(current => current.filter((item, i) => i !== index));
     console.log('delete' + index.toString());
   };
 
@@ -64,14 +110,18 @@ const TransactionScreen = () => {
     return (
       <View style>
         <View
-          style={{padding: 20, justifyContent: 'center', alignItems: 'center'}}>
+          style={{
+            paddingTop: 20,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
           <Text
             style={{
               color: '#000000',
               fontSize: 19,
               fontWeight: '700',
             }}>
-            $14444
+            {wallet ? wallet.amount + ' đ' : 'No wallet selected'}
           </Text>
         </View>
         <View style={styles.textBalance}>
@@ -79,31 +129,67 @@ const TransactionScreen = () => {
             style={{
               color: '#000000',
               fontSize: 15,
+              fontWeight: 'bold',
             }}>
             Account Balance
           </Text>
         </View>
-        <Image
-          source={require('../assets/iconCalendar.png')}
-          style={{left: 80, width: 25, height: 25}}></Image>
-        <View>
-          <View style={styles.textCalendar}>
-            <Text
-              style={{color: '#000000',fontSize: 14,}}>
-              13 Feb, 2022
-            </Text>
-          </View>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+          <Image
+            source={require('../assets/iconCalendar.png')}
+            style={{width: 25, height: 25}}></Image>
+          <TouchableOpacity
+            onPress={() => {
+              setShow(true);
+            }}>
+            <View>
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontSize: 20,
+                  color: '#000000',
+                }}>
+                {dateText}
+              </Text>
+              <View style={{borderColor: '#000', borderWidth: 0.5}}></View>
+            </View>
+          </TouchableOpacity>
         </View>
         <View style={{height: 20}}></View>
         <View style={styles.box}>
-          <Text></Text>
+          <View
+            style={{
+              height: 20,
+              backgroundColor: '#D6F6EB',
+              borderTopLeftRadius: 25,
+              borderTopRightRadius: 25,
+            }}></View>
+          <FlatList
+            data={transactionList}
+            renderItem={({item, index}) => {
+              return <TransTab data={item} onDelete={onDelete} index={index} />;
+            }}
+          />
         </View>
-        <View style={styles.button}>
-          <Text
-            style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+        {/* <View style={styles.button}>
+          <Text style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
             View Report
           </Text>
-        </View>
+        </View> */}
+        {show && (
+          <DateTimePicker
+            testID="DateTimePicker"
+            value={date}
+            mode={'date'}
+            display={'default'}
+            onChange={onChangeDate}
+          />
+        )}
       </View>
     );
   }
@@ -116,13 +202,6 @@ const TransactionScreen = () => {
 
       {/*header section: calendar*/}
       {renderHeader()}
-
-      <FlatList
-        data={transactionList}
-        renderItem={({item, index}) => {
-          return <TransTab data={item} onDelete={onDelete} index={index} />;
-        }}
-      />
     </View>
   );
 };
@@ -131,9 +210,6 @@ export default TransactionScreen;
 
 const styles = StyleSheet.create({
   textBalance: {
-    paddingTop: 20,
-    fontSize: 15,
-    fontWeight: 'bold',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -163,17 +239,16 @@ const styles = StyleSheet.create({
     height: 120,
     flexDirection: 'column',
     justifyContent: 'space-between',
-   
+
     paddingTop: 20,
     paddingBottom: 20,
     backgroundColor: '#D6F6EB',
     justifyContent: 'center',
     alignItems: 'center',
-  
   },
-  box:{
-    height: 217,
-    width: 310,
+  box: {
+    height: height * 0.55,
+    width: '80%',
     borderRadius: 25,
     backgroundColor: '#D6F6EB',
     alignSelf: 'center',

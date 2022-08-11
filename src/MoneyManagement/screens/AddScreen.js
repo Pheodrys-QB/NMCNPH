@@ -11,7 +11,14 @@ import {
 } from 'react-native';
 import Dropdown from '../components/Dropdown';
 import {db} from '../firebase-config';
-import {doc, getDocs, collection, setDoc, Timestamp} from 'firebase/firestore';
+import {
+  doc,
+  getDocs,
+  collection,
+  setDoc,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -26,16 +33,16 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 const test = [
   {
-    name: 'food',
+    name: 'Food',
   },
   {
-    name: 'drink',
+    name: 'Drink',
   },
   {
-    name: 'transport',
+    name: 'Transport',
   },
   {
-    name: 'housing',
+    name: 'Housing',
   },
 ];
 
@@ -78,30 +85,31 @@ const AddScreen = () => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
-    if (currentDate) {
-      let temp = new Date(currentDate);
-    }
   };
 
   const setData = async () => {
     if (!selectedCat || !selectedWal || !money) {
       return;
     }
+    const walletDoc = doc(db, 'users', user.uid, 'Wallets', selectedWal.id);
     const colRef = collection(db, 'users', user.uid, 'Transactions');
     const docRef = doc(colRef);
 
     const newDate = Timestamp.fromDate(new Date(dateText));
+    let intMoney = parseInt(money);
 
     try {
       await setDoc(docRef, {
         id: docRef.id,
         catergory: selectedCat.name,
         walletID: selectedWal.id,
-        amount: parseInt(money),
+        amount: intMoney,
         note: note,
         date: newDate,
       });
       console.log('done');
+      let res = selectedWal.amount - intMoney;
+      await updateDoc(walletDoc, {amount: res});
     } catch (err) {
       console.log(err);
     }

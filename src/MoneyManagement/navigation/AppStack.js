@@ -99,7 +99,7 @@ const AppStack = () => {
                 />
                 <Text
                   style={{color: focused ? '#e32f45' : '#000', fontSize: 12}}>
-                  Home
+                  Saving
                 </Text>
               </View>
             ),

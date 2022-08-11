@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   Button,
+  TextInput,
 } from 'react-native';
 
 import {db} from '../firebase-config';
@@ -20,7 +21,7 @@ import {
   query,
   where,
   setDoc,
-  TextInput,
+  updateDoc,
 } from 'firebase/firestore';
 import {AuthContext} from '../navigation/AuthProvider';
 import {useFocusEffect} from '@react-navigation/native';
@@ -30,55 +31,104 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('window');
 
+let CATERGORY = [
+  {
+    name: 'Food',
+    amount: 0,
+  },
+  {
+    name: 'Drink',
+    amount: 0,
+  },
+  {
+    name: 'Transport',
+    amount: 0,
+  },
+  {
+    name: 'Housing',
+    amount: 0,
+  },
+];
+
 const HomeScreen = () => {
   const user = useContext(AuthContext);
 
   const [showWallet, setShowWallet] = useState(false);
   const [showTransactions, setShowTransactions] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
+  const [showName, setShowName] = useState(false);
+  const [showMoney, setShowMoney] = useState(false);
+  const [show, setShow] = useState(false);
 
-  const [storedWallet, setStoredWallet] = useState(null);
   const [curwallet, setCurWallet] = useState(null);
+  const [curIdx, setCurIdx] = useState(null);
   const [walletList, setWalletList] = useState([]);
+  const [transactionList, setTransactionList] = useState([]);
 
-  const [name, setName] = useState('test');
-  const [amount, setAmount] = useState('1000');
+  const [name, setName] = useState(null);
+  const [amount, setAmount] = useState(null);
 
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     setWalletList([...WalletTest]);
-  //     console.log('home');
-  //   }, []),
-  // );
-
-  const updateStoredID = async () => {
-    if (storedWallet) {
-      try {
-        await AsyncStorage.setItem('StoredID', storedWallet);
-        console.log('store: ', storedWallet);
-      } catch (err) {
-        console.log(err);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (curwallet) {
+        getData();
+        fetchWallet();
       }
-    } else {
-      try {
-        await AsyncStorage.removeItem('StoredID');
-        console.log('store: ', storedWallet);
-      } catch (err) {
-        console.log(err);
-      }
+      console.log('home');
+    }, []),
+  );
+
+  useEffect(() => {
+    if (curwallet) {
+      getData();
+      console.log('item');
     }
-  };
+  }, [curwallet]);
 
   useEffect(() => {
     fetchWallet();
   }, []);
+
+  const updateName = async () => {
+    const walletDoc = doc(db, 'users', user.uid, 'Wallets', curwallet.id);
+    await updateDoc(walletDoc, {name: name});
+
+    let temp = curwallet;
+    temp.name = 'name';
+    setCurWallet(temp);
+
+    let list = walletList;
+    list[curIdx].name = name;
+    setWalletList([...list]);
+
+    setShowName(false);
+    setShow(false);
+    setName(null);
+  };
+
+  const updateMoney = async () => {
+    const walletDoc = doc(db, 'users', user.uid, 'Wallets', curwallet.id);
+    let res = curwallet.amount + parseInt(amount);
+    await updateDoc(walletDoc, {amount: res});
+
+    let temp = curwallet;
+    temp.amount = res;
+    setCurWallet(temp);
+
+    let list = walletList;
+    list[curIdx].amount = res;
+    setWalletList([...list]);
+
+    setShowMoney(false);
+    setShow(false);
+    setAmount(null);
+  };
 
   const fetchWallet = async () => {
     if (user) {
       try {
         let res = await AsyncStorage.getItem('StoredID');
         console.log('get ', res);
-        setStoredWallet(res);
 
         const transSnapshot = await getDocs(
           collection(db, 'users', user.uid, 'Wallets'),
@@ -88,11 +138,11 @@ const HomeScreen = () => {
         });
         const list = transSnapshot.docs.map(x => x.data());
         setWalletList([...list]);
-        let d = list.find(e => e.id == res);
-        if (d) {
-          setCurWallet(d);
-        } else {
-          setStoredWallet(null);
+        let index = list.findIndex(e => e.id == res);
+
+        if (index != -1) {
+          setCurWallet(list[index]);
+          setCurIdx(index);
         }
       } catch (err) {
         console.log(err);
@@ -111,10 +161,20 @@ const HomeScreen = () => {
             console.log(doc.data());
           });
           const list = transSnapshot.docs.map(x => x.data());
-          setWalletList(list);
+          CATERGORY.forEach(cat => {
+            cat.amount = 0;
+          });
+
+          list.forEach(item => {
+            CATERGORY.forEach(cat => {
+              if (item.catergory == cat.name) {
+                cat.amount = cat.amount + item.amount;
+              }
+            });
+          });
+          setTransactionList([...list]);
         } catch (err) {
           console.log(err);
-          console.log('what');
         }
       }
     }
@@ -128,7 +188,7 @@ const HomeScreen = () => {
     const docRef = doc(colRef);
 
     try {
-      let data = {id: docRef.id, name: name, amount: amount};
+      let data = {id: docRef.id, name: name, amount: parseInt(amount)};
       await setDoc(docRef, data);
       console.log('done');
       setWalletList([...walletList, data]);
@@ -138,28 +198,30 @@ const HomeScreen = () => {
     setAmount(null);
     setName(null);
     setShowCreate(false);
+    setShow(false);
   };
 
   const onDelete = async index => {
     // Delete from database
-    // await deleteDoc(
-    //   doc(db, 'users', user.uid, 'Wallets', walletList[index].id),
-    // );
+    await deleteDoc(
+      doc(db, 'users', user.uid, 'Wallets', walletList[index].id),
+    );
     let select = walletList[index];
     if (curwallet.id == select.id) {
       setCurWallet(null);
-      setStoredWallet(null);
+      setCurIdx(null)
       await AsyncStorage.removeItem('StoredID');
     }
     let list = walletList.filter((item, i) => i !== index);
     setWalletList([...list]);
+    setTransactionList([]);
     console.log('delete' + index.toString());
   };
 
   const onSelect = async index => {
     let select = walletList[index];
     setCurWallet(select);
-    setStoredWallet(select.id);
+    setCurIdx(index)
     await AsyncStorage.setItem('StoredID', select.id);
     console.log('select' + index.toString());
   };
@@ -175,28 +237,44 @@ const HomeScreen = () => {
           Account balance: {curwallet?.name}
         </Text>
       </View>
-
+      <View style={{height: 10}}></View>
       <View style={{width: '100%', flex: 1}}>
-        <ScrollView
-          contentContainerStyle={{alignItems: 'center', paddingTop: 10}}>
+        <ScrollView contentContainerStyle={{alignItems: 'center'}}>
           <View
             style={{
               width: '80%',
               flexDirection: 'row',
               justifyContent: 'space-evenly',
             }}>
-            <View style={styles.customize}>
-              <Text
-                style={{fontSize: 15, fontWeight: 'bold', color: '#000000'}}>
-                Add money
-              </Text>
-            </View>
-            <View style={styles.customize}>
-              <Text
-                style={{fontSize: 15, fontWeight: 'bold', color: '#000000'}}>
-                Rename
-              </Text>
-            </View>
+            <TouchableOpacity
+              onPress={() => {
+                if (curwallet) {
+                  setShowMoney(true);
+                  setShow(true);
+                }
+              }}>
+              <View style={styles.customize}>
+                <Text
+                  style={{fontSize: 15, fontWeight: 'bold', color: '#000000'}}>
+                  Add money
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                if (curwallet) {
+                  setShowName(true);
+                  setShow(true);
+                }
+              }}>
+              <View style={styles.customize}>
+                <Text
+                  style={{fontSize: 15, fontWeight: 'bold', color: '#000000'}}>
+                  New name
+                </Text>
+              </View>
+            </TouchableOpacity>
           </View>
           <View style={{height: 20}}></View>
 
@@ -239,7 +317,8 @@ const HomeScreen = () => {
                     }}></View>
                   <TouchableOpacity
                     onPress={() => {
-                      showCreate(true);
+                      setShowCreate(true);
+                      setShow(true);
                     }}>
                     <View
                       style={{
@@ -298,19 +377,39 @@ const HomeScreen = () => {
                   </View>
                 </TouchableOpacity>
                 <View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
+                  {transactionList.map((item, index) => {
+                    return (
+                      <View
+                        style={{paddingHorizontal: 20, paddingVertical: 10}}
+                        key={index}>
+                        <View
+                          style={{
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            flexDirection: 'row',
+                          }}>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              color: '#000000',
+                              fontWeight: 'bold',
+                            }}>
+                            {item.catergory}
+                          </Text>
+                          <Text>{item.amount} đ</Text>
+                        </View>
+                        <Text>Note: {item.note}</Text>
+                      </View>
+                    );
+                  })}
                 </View>
+                <View
+                  style={{
+                    height: 20,
+                    backgroundColor: '#F0FDF8',
+                    borderBottomRightRadius: 25,
+                    borderBottomLeftRadius: 25,
+                  }}></View>
               </View>
             )}
             {!showTransactions && (
@@ -334,19 +433,40 @@ const HomeScreen = () => {
                   </View>
                 </TouchableOpacity>
                 <View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
-                  <View style={{paddingHorizontal: 20, paddingVertical: 10}}>
-                    <Text>1</Text>
-                  </View>
+                  {CATERGORY.map((item, index) => {
+                    if (item.amount == 0) {
+                      return;
+                    }
+                    return (
+                      <View
+                        key={index}
+                        style={{
+                          paddingHorizontal: 20,
+                          paddingVertical: 10,
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          flexDirection: 'row',
+                        }}>
+                        <Text
+                          style={{
+                            fontSize: 18,
+                            color: '#000000',
+                            fontWeight: 'bold',
+                          }}>
+                          {item.name}
+                        </Text>
+                        <Text>{item.amount} đ</Text>
+                      </View>
+                    );
+                  })}
                 </View>
+                <View
+                  style={{
+                    height: 20,
+                    backgroundColor: '#F0FDF8',
+                    borderBottomRightRadius: 25,
+                    borderBottomLeftRadius: 25,
+                  }}></View>
               </View>
             )}
           </View>
@@ -367,32 +487,157 @@ const HomeScreen = () => {
         </ScrollView>
       </View>
 
-      {showCreate && (
+      {show && (
         <View style={[styles.create, {width: width, height: height}]}>
           <TouchableOpacity
             onPress={() => {
+              setShow(false);
               setShowCreate(false);
+              setShowMoney(false);
+              setShowName(false);
               setName(null);
               setAmount(null);
             }}>
             <View style={styles.createContainer}></View>
           </TouchableOpacity>
-          <View style={styles.createPrompt}>
-            <ScrollView>
-              <Text>New Wallet</Text>
-              <View>
-                <Text>Name</Text>
-                <TextInput />
-              </View>
-              <View>
-                <Text>Money</Text>
-                <TextInput />
-              </View>
-              <View>
-                <Button title={'Create'} onPress={createWallet}/>
-              </View>
-            </ScrollView>
-          </View>
+          {showCreate && (
+            <View style={styles.createPrompt}>
+              <ScrollView>
+                <View style={styles.crt}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                    }}>
+                    New Wallet
+                  </Text>
+                </View>
+                <View style={{paddingTop: 10, paddingHorizontal: 30}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        paddingRight: 10,
+                        paddingTop: 15,
+                      }}>
+                      Name
+                    </Text>
+                    <TextInput
+                      placeholder="Input name"
+                      onChangeText={setName}
+                      style={styles.noteInput}
+                      value={name}
+                    />
+                  </View>
+                  <View style={{height: 30}}></View>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        paddingRight: 10,
+                        paddingTop: 15,
+                      }}>
+                      Money
+                    </Text>
+                    <TextInput
+                      placeholder="Input money"
+                      onChangeText={setAmount}
+                      value={amount}
+                      style={styles.noteInput}
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+                <View style={{paddingHorizontal: 60, paddingTop: 50}}>
+                  <Button title={'Create'} onPress={createWallet} />
+                </View>
+              </ScrollView>
+            </View>
+          )}
+          {showMoney && (
+            <View style={styles.createPrompt2}>
+              <ScrollView>
+                <View style={styles.crt}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                    }}>
+                    Add Money
+                  </Text>
+                </View>
+                <View style={{paddingTop: 10, paddingHorizontal: 30}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        paddingRight: 10,
+                        paddingTop: 15,
+                      }}>
+                      Money
+                    </Text>
+                    <TextInput
+                      placeholder="Input money"
+                      onChangeText={setAmount}
+                      value={amount}
+                      style={styles.noteInput}
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+                <View style={{paddingHorizontal: 60, paddingTop: 50}}>
+                  <Button title={'Add'} onPress={updateMoney} />
+                </View>
+              </ScrollView>
+            </View>
+          )}
+          {showName && (
+            <View style={styles.createPrompt2}>
+              <ScrollView>
+                <View style={styles.crt}>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      color: '#000000',
+                    }}>
+                    New Name
+                  </Text>
+                </View>
+                <View style={{paddingTop: 10, paddingHorizontal: 30}}>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 'bold',
+                        color: '#000000',
+                        paddingRight: 10,
+                        paddingTop: 15,
+                      }}>
+                      Name
+                    </Text>
+                    <TextInput
+                      placeholder="Input name"
+                      onChangeText={setName}
+                      style={styles.noteInput}
+                      value={name}
+                    />
+                  </View>
+                </View>
+                <View style={{paddingHorizontal: 60, paddingTop: 50}}>
+                  <Button title={'Update'} onPress={updateName} />
+                </View>
+              </ScrollView>
+            </View>
+          )}
         </View>
       )}
     </View>
@@ -429,6 +674,15 @@ const styles = StyleSheet.create({
   drop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    backgroundColor: '#D6F6EB',
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+  },
+  crt: {
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 10,
     paddingVertical: 10,
     backgroundColor: '#D6F6EB',
@@ -481,5 +735,23 @@ const styles = StyleSheet.create({
     left: width * 0.1,
     top: height / 4,
     borderRadius: 25,
+  },
+  createPrompt2: {
+    position: 'absolute',
+    width: '80%',
+    height: 200,
+    backgroundColor: '#F5F5F5',
+    left: width * 0.1,
+    top: height / 4,
+    borderRadius: 25,
+  },
+
+  noteInput: {
+    textAlignVertical: 'center',
+    borderBottomWidth: 1,
+    flex: 1,
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#000000',
   },
 });

@@ -5,25 +5,30 @@ import {Swipeable, GestureHandlerRootView} from 'react-native-gesture-handler';
 const TransTab = ({data, index, onDelete = () => {}}) => {
   const rightSwipe = () => {
     return (
-      <TouchableOpacity activeOpacity={0.5} onPress={()=>onDelete(index)}>
+      <TouchableOpacity activeOpacity={0.5} onPress={() => onDelete(index)}>
         <View style={styles.deleteBox}>
-          <Text>Delete</Text>
+          <Text style={{fontWeight: 'bold', color: '#fff'}}>Delete</Text>
         </View>
       </TouchableOpacity>
     );
   };
   return (
     <GestureHandlerRootView>
-      <Swipeable renderRightActions={rightSwipe} overshootRight={false}>
+      <Swipeable
+        renderRightActions={rightSwipe}
+        overshootRight={false}
+        key={data.id}>
         <View style={styles.item}>
-          <View style={styles.itemLeft}>
-            <View style={styles.square}></View>
-            <Text style={styles.itemText}>
-              {data.catergory}, {data.id}
-            </Text>
+          <View style={styles.top}>
+            <View style={styles.itemLeft}>
+              <Text style={styles.itemText}>{data.catergory}</Text>
+            </View>
+            <View style={styles.itemRight}>
+              <Text>{data.amount} đ</Text>
+            </View>
           </View>
-          <View style={styles.itemRight}>
-            <Text>{data.amount}</Text>
+          <View>
+            <Text>Note: {data.note}</Text>
           </View>
         </View>
       </Swipeable>
@@ -38,12 +43,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     padding: 15,
     //borderRadius: 10,
+  },
+  top: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 5,
-    height: 90,
   },
+
   itemLeft: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -62,12 +68,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 15,
   },
-  itemText: {fontSize: 18},
+  itemText: {fontSize: 18, color: '#000000', fontWeight: 'bold'},
   deleteBox: {
     backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
-    height: 90,
+    width: 60,
+    height: 55,
   },
 });

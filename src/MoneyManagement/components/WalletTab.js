@@ -7,7 +7,7 @@ const WalletTab = ({data, index, onDelete = () => {}, onSelect = () => {}}) => {
     return (
       <TouchableOpacity activeOpacity={0.5} onPress={() => onDelete(index)}>
         <View style={styles.deleteBox}>
-          <Text>Delete</Text>
+          <Text style={{fontWeight:'bold', color:'#fff'}}>Delete</Text>
         </View>
       </TouchableOpacity>
     );
@@ -24,13 +24,12 @@ const WalletTab = ({data, index, onDelete = () => {}, onSelect = () => {}}) => {
             onSelect(index)
           }}>
           <View style={styles.itemLeft}>
-            <View style={styles.square}></View>
             <Text style={styles.itemText}>
-              {data.name}, {data.id}
+              {data.name}
             </Text>
           </View>
           <View style={styles.itemRight}>
-            <Text>{data.amount}</Text>
+            <Text>{data.amount} đ</Text>
           </View>
         </TouchableOpacity>
       </Swipeable>
@@ -67,12 +66,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 15,
   },
-  itemText: {fontSize: 18},
+  itemText: {fontSize: 18, color:'#000000', fontWeight:'bold'},
   deleteBox: {
     backgroundColor: 'red',
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
-    height: 90,
+    width: 60,
+    height:55,
   },
 });
