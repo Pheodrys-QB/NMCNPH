@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: 60,
-    height: 55,
+    height: 75,
   },
 });

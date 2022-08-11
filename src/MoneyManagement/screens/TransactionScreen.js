@@ -62,10 +62,10 @@ const TransactionScreen = () => {
     getData(formatted);
   }, [date]);
 
-  const getWallet = async (res) => {
-    const docRef = doc(db, 'users', user.uid, 'Wallets', res)
+  const getWallet = async res => {
+    const docRef = doc(db, 'users', user.uid, 'Wallets', res);
     const walletData = await getDoc(docRef);
-    console.log(walletData.data())
+    console.log(walletData.data());
     setWallet(walletData.data());
   };
 
@@ -73,7 +73,7 @@ const TransactionScreen = () => {
     if (user) {
       let res = await AsyncStorage.getItem('StoredID');
       console.log(res);
-      getWallet(res)
+      getWallet(res);
 
       const newDate = Timestamp.fromDate(new Date(timeText));
       const transCol = collection(db, 'users', user.uid, 'Transactions');
@@ -175,12 +175,17 @@ const TransactionScreen = () => {
               return <TransTab data={item} onDelete={onDelete} index={index} />;
             }}
           />
+          <View
+            style={{
+              position: 'absolute',
+              bottom: -20,
+              height: 20,
+              backgroundColor: '#D6F6EB',
+              borderBottomLeftRadius: 25,
+              borderBottomRightRadius: 25,
+              width: '100%',
+            }}></View>
         </View>
-        {/* <View style={styles.button}>
-          <Text style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
-            View Report
-          </Text>
-        </View> */}
         {show && (
           <DateTimePicker
             testID="DateTimePicker"
@@ -250,6 +255,8 @@ const styles = StyleSheet.create({
     height: height * 0.55,
     width: '80%',
     borderRadius: 25,
+    borderBottomLeftRadius: 0,
+    borderBottomLeftRadius: 0,
     backgroundColor: '#D6F6EB',
     alignSelf: 'center',
   },
