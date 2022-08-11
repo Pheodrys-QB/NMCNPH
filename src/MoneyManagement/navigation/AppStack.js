@@ -4,7 +4,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {View, Dimensions, Text, Image} from 'react-native';
 
 import AddScreen from '../screens/AddScreen';
-import TransactionScreen from '../screens/TransactionScreen';
+import TransStack from './TransStack';
 import MoreScreen from '../screens/MoreScreen';
 import SavingScreen from '../screens/SavingScreen';
 import HomeScreen from '../screens/HomeScreen';
@@ -52,8 +52,8 @@ const AppStack = () => {
           }}
         />
         <Tab.Screen
-          name="Transactions"
-          component={TransactionScreen}
+          name="TransStack"
+          component={TransStack}
           options={{
             tabBarIcon: ({focused}) => (
               <View style={{alignItems: 'center' , justifyContent:'center', paddingBottom:15}}>

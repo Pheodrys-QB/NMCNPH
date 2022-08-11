@@ -28,7 +28,6 @@ const AuthStack = () => {
         component={RegisterScreen}
         options={{
           headerTitle: '',
-          
           headerTransparent: 'true',
         }}
       />

@@ -27,7 +27,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {width, height} = Dimensions.get('window');
-const TransactionScreen = () => {
+
+const TransactionScreen = ({navigation}) => {
   const [transactionList, setTransactionList] = useState([]);
   const user = useContext(AuthContext);
   const [date, setDate] = useState(new Date());
@@ -111,14 +112,14 @@ const TransactionScreen = () => {
       <View style>
         <View
           style={{
-            paddingTop: 20,
+            paddingTop:10,
             justifyContent: 'center',
             alignItems: 'center',
           }}>
           <Text
             style={{
               color: '#000000',
-              fontSize: 19,
+              fontSize: 25,
               fontWeight: '700',
             }}>
             {wallet ? wallet.amount + ' đ' : 'No wallet selected'}
@@ -201,8 +202,35 @@ const TransactionScreen = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.titleTop}>
-        <Text style={styles.sectionTitle}>Transaction History</Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent:'space-between',
+          alignContent: 'center',
+          backgroundColor: '#D6F6EB',
+        }}>
+        <View style={styles.titleTop}>
+          <View></View>
+          <Text style={[styles.sectionTitle, {color: '#000000'}]}>
+            Transactions
+          </Text>
+        </View>
+        <View style={styles.titleTop}>
+          <View></View>
+          <TouchableOpacity
+            onPress={() => {
+              let t = 0;
+              navigation.navigate('Search');
+            }}>
+            <View style={{alignItems: 'center', justifyContent: 'center', paddingRight:20}}>
+              <Image
+                source={require('../assets/magnify.png')}
+                resizeMode={'contain'}
+                style={{width: 30, height: 30}}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/*header section: calendar*/}
@@ -240,16 +268,10 @@ const styles = StyleSheet.create({
   titleTop: {
     paddingVertical: 20,
     paddingHorizontal: 20,
-    backgroundColor: '#CB2635',
+    backgroundColor: '#D6F6EB',
     height: 120,
     flexDirection: 'column',
     justifyContent: 'space-between',
-
-    paddingTop: 20,
-    paddingBottom: 20,
-    backgroundColor: '#D6F6EB',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   box: {
     height: height * 0.55,
