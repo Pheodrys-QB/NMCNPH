@@ -103,6 +103,9 @@ const SavingScreen = () => {
 
   const OnChangeAmount = async () => {
     if (user && wallet) {
+      if(!money){
+        return
+      }
       const saving = savingList[idx];
       const savecurr = saving.current
       const docRef = doc(db, 'users', user.uid, 'Savings', saving.id);
