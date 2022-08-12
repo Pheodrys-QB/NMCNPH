@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Button,
+  Alert,
 } from 'react-native';
 import {db} from '../firebase-config';
 import {
@@ -158,7 +159,11 @@ const SavingScreen = () => {
 
   const createSaving = async () => {
     if (user) {
-      if (!title || !goal) {
+      if (!title || !goal|| goal == 0) {
+        Alert.alert(
+          'Your title or your goal is invalid. \nPlease try again!!!',
+          [{text: 'OK', onPress: () => console.log('OK Pressed')}],
+        )
         return;
       }
       const colRef = collection(db, 'users', user.uid, 'Savings');
