@@ -74,12 +74,15 @@ const HomeScreen = () => {
         getData();
         fetchWallet();
       }
-      else{
-        let list = []
-        setTransactionList([...list])
-      }
       console.log('home');
-      console.log(user.uid)
+      console.log(user.uid);
+      return () => {
+        let list = [];
+        setTransactionList([...list]);
+        CATERGORY.forEach(e => {
+          e.amount = 0;
+        });
+      };
     }, []),
   );
 
@@ -214,7 +217,7 @@ const HomeScreen = () => {
     let select = walletList[index];
     if (curwallet.id == select.id) {
       setCurWallet(null);
-      setCurIdx(null)
+      setCurIdx(null);
       await AsyncStorage.removeItem('StoredID');
     }
     let list = walletList.filter((item, i) => i !== index);
@@ -226,7 +229,7 @@ const HomeScreen = () => {
   const onSelect = async index => {
     let select = walletList[index];
     setCurWallet(select);
-    setCurIdx(index)
+    setCurIdx(index);
     await AsyncStorage.setItem('StoredID', select.id);
     console.log('select' + index.toString());
   };
