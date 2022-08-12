@@ -19,7 +19,9 @@ export default function MoreTab() {
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getUserData()
+  }, []);
 
   const LogOut = async () => {
     await signOut(auth);

@@ -74,7 +74,12 @@ const HomeScreen = () => {
         getData();
         fetchWallet();
       }
+      else{
+        let list = []
+        setTransactionList([...list])
+      }
       console.log('home');
+      console.log(user.uid)
     }, []),
   );
 
