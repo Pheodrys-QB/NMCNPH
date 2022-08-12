@@ -88,36 +88,38 @@ const AddScreen = () => {
   };
 
   const setData = async () => {
-    if (!selectedCat || !selectedWal || !money) {
-      return;
-    }
-    const walletDoc = doc(db, 'users', user.uid, 'Wallets', selectedWal.id);
-    const colRef = collection(db, 'users', user.uid, 'Transactions');
-    const docRef = doc(colRef);
+    if (user) {
+      if (!selectedCat || !selectedWal || !money) {
+        return;
+      }
+      const walletDoc = doc(db, 'users', user.uid, 'Wallets', selectedWal.id);
+      const colRef = collection(db, 'users', user.uid, 'Transactions');
+      const docRef = doc(colRef);
 
-    const newDate = Timestamp.fromDate(new Date(dateText));
-    let intMoney = parseInt(money);
+      const newDate = Timestamp.fromDate(new Date(dateText));
+      let intMoney = parseInt(money);
 
-    try {
-      await setDoc(docRef, {
-        id: docRef.id,
-        catergory: selectedCat.name,
-        walletID: selectedWal.id,
-        amount: intMoney,
-        note: note,
-        date: newDate,
-      });
-      console.log('done');
-      let res = selectedWal.amount - intMoney;
-      await updateDoc(walletDoc, {amount: res});
-    } catch (err) {
-      console.log(err);
+      try {
+        await setDoc(docRef, {
+          id: docRef.id,
+          catergory: selectedCat.name,
+          walletID: selectedWal.id,
+          amount: intMoney,
+          note: note,
+          date: newDate,
+        });
+        console.log('done');
+        let res = selectedWal.amount - intMoney;
+        await updateDoc(walletDoc, {amount: res});
+      } catch (err) {
+        console.log(err);
+      }
+      setSelectedCat(null);
+      setSelectedWal(null);
+      setMoney(null);
+      setNote(null);
+      setDate(new Date());
     }
-    setSelectedCat(null);
-    setSelectedWal(null);
-    setMoney(null);
-    setNote(null);
-    setDate(new Date());
   };
 
   useFocusEffect(

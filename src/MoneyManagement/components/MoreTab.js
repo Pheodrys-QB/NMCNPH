@@ -1,74 +1,112 @@
 //import React from 'react';
-import React, {useState, useEffect} from 'react';
-import { StyleSheet,Image, Text,View, Button, TouchableOpacity} from 'react-native';
-import {auth} from '../firebase-config';
+import React, {useState, useEffect, useContext} from 'react';
+import {StyleSheet, Image, Text, View, TouchableOpacity} from 'react-native';
+import {auth, db} from '../firebase-config';
 import {signOut} from 'firebase/auth';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
+import {AuthContext} from '../navigation/AuthProvider';
+import {doc, getDoc} from 'firebase/firestore';
 
+export default function MoreTab() {
+  const user = useContext(AuthContext);
+  const [userData, setUserData] = useState(null);
 
-export default function MoreTab (){
-    const [date, setDate] = useState(null)
-  
-    const LogOut = async () => {
-      await signOut(auth);
-    };
-  
-    useEffect(()=>{
-      const t = new Date('2022-08-04')
-      console.log(t)
-    }, [])
-  
-    return (
-        <View>
-            <ScrollView>
-                <View style ={{padding:10,width:'100%',backgroundColor:'#000',height:150}}>
-                    <TouchableOpacity>
-                        <Image source = {require('../assets/blackBG.jpg')}
-                        style={{width:30,height:30}}></Image>
-                        <View></View>
-                        <View></View>
-                    </TouchableOpacity>
-                </View>
-                <View style={{alignItems:'center'}}>
-                    <Image source= {require('../assets/avatarLogo.png')}
-                    style={{width:140,height:140,borderRadius:100,marginTop:-70}}></Image>
-                    <Text style={{fontSize:25,fontWeight:'bold',padding:10}}>Hcmus User</Text>
-                    <Text style={{fontSize:15,fontWeight:'bold',color:'grey'}}>20yo, Male</Text>
-                    
-                </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
-                                width:'90%',padding:20,paddingBottom:22,borderRadius:10,
-                                shadowOpacity:80,
-                                elevationL:15,
-                                marginTop:20}}>
-                    <Button color='#fbaa60' title='User setting'></Button>
-                    
-                </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
-                                width:'90%',padding:20,paddingBottom:22,borderRadius:10,
-                                shadowOpacity:80,
-                                elevationL:15,
-                                marginTop:20}}>
-                    <Button color='#fbaa60' title='Term of service'></Button>
-                    
-                </View>
-                <View style={{alignSelf:'center',flexDirection:'row',justifyContent:'center',backgroundColor:'#d6f6eb',
-                                width:'90%',padding:20,paddingBottom:22,borderRadius:10,
-                                shadowOpacity:80,
-                                elevationL:15,
-                                marginTop:20}}>
-                    <Button title='Log out' onPress={LogOut}></Button>
-                    
-                </View>
-            </ScrollView>
-            
-        </View>
-      
-    );
+  const getUserData = async () => {
+    if (user) {
+      const ref = doc(db, 'users', user.uid);
+      const snapshot = await getDoc(ref);
+      setUserData(snapshot.data());
+    }
   };
-  
-//   <Button title="LogOut" onPress={LogOut} />
-//             <Text> {date} </Text>
-  
-  
-//user screen
+
+  useEffect(() => {}, []);
+
+  const LogOut = async () => {
+    await signOut(auth);
+  };
+
+  return (
+    <View>
+      <ScrollView>
+        <View
+          style={{
+            padding: 10,
+            width: '100%',
+            backgroundColor: '#D6F6EB',
+            height: 150,
+          }}></View>
+        <View style={{alignItems: 'center'}}>
+          <Image
+            source={require('../assets/avatarLogo.png')}
+            style={{
+              width: 140,
+              height: 140,
+              borderRadius: 100,
+              marginTop: -70,
+            }}></Image>
+          <Text
+            style={{
+              fontSize: 25,
+              fontWeight: 'bold',
+              padding: 10,
+              color: '#000000',
+            }}>
+            {userData ? userData.username : 'No username'}
+          </Text>
+          <Text style={{fontSize: 15, fontWeight: 'bold', color: '#000000'}}>
+            {userData ? userData.email : 'No email'}
+          </Text>
+        </View>
+        <View
+          style={{
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingTop: 40,
+          }}>
+          <TouchableOpacity style={styles.button}>
+            <View>
+              <Text
+                style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+                Settings
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{height: 20}}></View>
+          <TouchableOpacity style={styles.button}>
+            <View>
+              <Text
+                style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+                Terms of service
+              </Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{height: 20}}></View>
+
+          <TouchableOpacity style={styles.button} onPress={LogOut}>
+            <View>
+              <Text
+                style={{fontSize: 20, fontWeight: 'bold', color: '#000000'}}>
+                Log out
+              </Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 2,
+    backgroundColor: '#D6F6EB',
+  },
+  button: {
+    backgroundColor: '#F0FDF8',
+    width: '80%',
+    borderRadius: 25,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
